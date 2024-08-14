@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "kakao-chatbot"
-version = "0.1.0"
-description = ""
+version = "0.1.1"
+description = "Effortlessly build KakaoTalk chatbots with Python objects - say goodbye to complex JSON and hello to streamlined development."
 authors = ["Han Lee <hanlee@indiemaker.kr>"]
 readme = "README.md"
 packages = [{include = "kakao_chatbot"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 
 
 [build-system]
