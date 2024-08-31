@@ -6,6 +6,7 @@ classes:
     - SkillTemplate: 카카오톡 스킬 응답중 SkilllTemplate을 객체로 생성하는 추상 클래스
 """
 from abc import ABC, ABCMeta, abstractmethod
+from typing import Union
 import json
 
 
@@ -45,7 +46,7 @@ class BaseModel(ABC, metaclass=ABCMeta):
         return out
 
     @abstractmethod
-    def render(self) -> dict | list:
+    def render(self) -> Union[dict, list]:
         """객체를 카카오톡 응답 형식에 알맞게 dict로 변환합니다.
 
         변환된 dict는 각 객체가 타깃으로 하는 카카오톡 응답 형식의 상세 필드를 key로 가집니다.

@@ -15,7 +15,7 @@ classes:
     - Payload: Payload 객체를 저장하는 클래스
 """
 import json
-from typing import Optional
+from typing import Optional, Union
 
 from .base import ParentPayload
 from .context import Context
@@ -37,7 +37,7 @@ class Param(ParentPayload):
 
     Attributes:
         origin (str): 사용자 발화에서 직접 추출한 파라미터의 원본 텍스트.
-        value (str | dict): 파라미터의 실제 값. 문자열 또는 딕셔너리 형태일 수 있으며,
+        value Union[str, dict]: 파라미터의 실제 값. 문자열 또는 딕셔너리 형태일 수 있으며,
                             딕셔너리 형태인 경우, 추가적인 상세 정보를 포함합니다.
         group_name (str): 파라미터가 속한 그룹의 이름. 파라미터를 분류하는 데 사용됩니다.
     """
@@ -45,14 +45,14 @@ class Param(ParentPayload):
     def __init__(
             self,
             origin: str,
-            value: str | dict,
+            value: Union[str, dict],
             group_name: str = '',
             **kwargs):
         """Param 객체를 생성하는 메서드
 
         Args:
             origin (str): 사용자가 입력한 발화에서 추출한 파라미터의 원본
-            value (str | dict): 파라미터의 대표값
+            value Union[str, dict]: 파라미터의 대표값
             group_name (str): 파라미터의 그룹 이름 (기본값: '')
             **kwargs: 추가적인 정보
         """

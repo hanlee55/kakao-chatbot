@@ -10,7 +10,7 @@ Classes:
     - ItemCardComponent: 카카오톡 출력 요소 ItemCard의 객체를 생성하는 클래스
 """
 from abc import ABCMeta, abstractmethod
-from typing import Optional, overload
+from typing import Optional, overload, Union
 
 
 from ..base import ParentComponent
@@ -79,7 +79,7 @@ class ParentCardComponent(ParentComponent, metaclass=ABCMeta):
     def add_button(
             self,
             label: str,
-            action: str | ActionEnum,
+            action: Union[str, ActionEnum],
             web_link_url: Optional[str] = None,
             message_text: Optional[str] = None,
             phone_number: Optional[str] = None,
@@ -91,7 +91,7 @@ class ParentCardComponent(ParentComponent, metaclass=ABCMeta):
 
         Args:
             label (str): 버튼에 적히는 문구입니다.
-            action (str | Action): 버튼 클릭시 수행될 작업입니다.
+            action Union[str, Action]: 버튼 클릭시 수행될 작업입니다.
                                     (webLink, message, phone,
                                     block, share, operator)
             web_link_url (Optional[str]): 웹 브라우저를 열고 이동할 주소입니다.
@@ -441,7 +441,7 @@ class CommerceCardComponent(ParentCardComponent):
     def __init__(
         self,
         price: int,
-        thumbnails: list[Thumbnail] | Thumbnail,
+        thumbnails: Union[list[Thumbnail], Thumbnail],
         title: Optional[str] = None,
         description: Optional[str] = None,
         buttons: Optional[list[Button]] = None,
@@ -577,7 +577,7 @@ class ListCardComponent(ParentCardComponent):
 
     def __init__(
             self,
-            header: ListItem | str,
+            header: Union[ListItem, str],
             items: Optional[list[ListItem]] = None,
             buttons: Optional[list[Button]] = None,
             max_buttons: int = 2,
@@ -586,7 +586,7 @@ class ListCardComponent(ParentCardComponent):
         """ListCard 객체를 생성합니다.
 
         Args:
-            header (ListItem | str): 리스트 카드의 상단 항목 str인 경우 ListItem으로 변환됩니다.
+            header Union[ListItem, str]: 리스트 카드의 상단 항목 str인 경우 ListItem으로 변환됩니다.
             items (ListItems): 리스트 카드의 각각 아이템
             buttons (Optional[list[Button]], optional): 리스트 카드의 버튼들.
                                                     Defaults to None.
@@ -661,7 +661,7 @@ class ListCardComponent(ParentCardComponent):
             description: Optional[str] = None,
             image_url: Optional[str] = None,
             link: Optional[Link] = None,
-            action: Optional[str | ActionEnum] = None,
+            action: Optional[Union[str, ActionEnum]] = None,
             block_id: Optional[str] = None,
             message_text: Optional[str] = None,
             extra: Optional[dict] = None) -> "ListCardComponent":
@@ -672,7 +672,7 @@ class ListCardComponent(ParentCardComponent):
             description (str, optional): item의 설명
             image_url (str, optional): item의 우측 안내 사진
             link (Link, optional): item 클릭 시 동작할 링크
-            action (str | Action, optional):
+            action (Union[str, Action], optional):
                             itaem 클릭 시 수행될 작업(block 또는 message)
             block_id (str, optional): action이 block인 경우 block_id를 갖는 블록을 호출
             message_text (str, optional):
