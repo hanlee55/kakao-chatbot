@@ -2,7 +2,7 @@
 name = "kakao-chatbot"
 version = "0.1.2"
 description = "Effortlessly build KakaoTalk chatbots with Python objects - say goodbye to complex JSON and hello to streamlined development."
-authors = ["Han Lee <hanlee@indiemaker.kr>", "Seoyoung Hong"]
+authors = ["Han Lee <hanlee@indiemaker.kr>", "Seokyoung Hong"]
 readme = "README.md"
 packages = [{include = "kakao_chatbot"}]
 
