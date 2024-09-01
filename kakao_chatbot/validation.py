@@ -1,11 +1,11 @@
 """유효성 검사를 위한 함수들을 모아놓은 모듈"""
-from typing import Union
+from typing import Union, Tuple
 
 from .customerror import InvalidTypeError
 
 
 def validate_type(
-        allowed_types: Union[tuple, object],
+        allowed_types: Union[Tuple, object],
         *args,
         disallow_none: bool = False,
         exception_type=InvalidTypeError):

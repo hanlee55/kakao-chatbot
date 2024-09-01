@@ -8,7 +8,7 @@ classes:
     - Interaction: 카카오톡 출력 요소 Button과 QuickReply의 상위 클래스
 """
 from enum import Enum
-from typing import Any, Optional, Union
+from typing import Any, Optional, Tuple, List, Union, Dict
 
 from ..base import BaseModel
 from ..customerror import InvalidActionError
@@ -36,7 +36,7 @@ class ActionEnum(Enum):
     OPERATOR = "operator"
 
     @property
-    def uses_fields(self) -> tuple[Optional[list[str]], Optional[list[str]]]:
+    def uses_fields(self) -> Tuple[Optional[List[str]], Optional[List[str]]]:
         """각 action 유형이 사용하는 필드를 반환합니다.
 
         각 action 유형에 필요한 필드와 선택적 필드를 반환합니다.
@@ -79,12 +79,12 @@ class Interaction(BaseModel):
         action Union[str, Action]: 버튼의 동작, 문자열 또는 Action 열거형
         extra (dict, optional): 블록을 호출 시 스킬 서버에 추가로 전달할 데이터
     """
-    available_action_enums: list[ActionEnum] = []  # Action 열거형의 리스트 오버라이드 필요
+    available_action_enums: List[ActionEnum] = []  # Action 열거형의 리스트 오버라이드 필요
 
     def __init__(
             self,
             action: Optional[Union[str, ActionEnum]],
-            extra: Optional[dict] = None):
+            extra: Optional[Dict] = None):
         """Interaction 클래스의 생성자 메서드입니다.
 
         action을 Action 열거형으로 변환하여 저장합니다.
@@ -176,7 +176,7 @@ class Interaction(BaseModel):
                 validate_str(
                     getattr(self, camel_to_snake(field)))
 
-    def render(self) -> dict:
+    def render(self) -> Dict:
         """Interaction 객체를 카카오톡 응답 형식에 맞게 딕셔너리로 변환합니다.
 
         Interaction 객체의 label, action, extra를 딕셔너리로 변환합니다.
@@ -191,7 +191,7 @@ class Interaction(BaseModel):
 
         self.validate()
 
-        response: dict[str, Any] = {
+        response: Dict[str, Any] = {
             "action": self.action.value,
         }
 

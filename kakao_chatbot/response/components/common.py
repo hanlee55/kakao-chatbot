@@ -17,7 +17,7 @@ classes:
 """
 
 from abc import ABCMeta
-from typing import Optional, Union
+from typing import Optional, Union, List, Dict
 
 
 from ...customerror import InvalidLinkError
@@ -94,7 +94,7 @@ class Link(Common):
             raise InvalidLinkError("Link는 최소 하나의 링크를 가져야 합니다.")
         validate_str(self.web, self.pc, self.mobile)
 
-    def render(self) -> dict:
+    def render(self) -> Dict:
         """Link 객체를 카카오톡 응답 형식에 맞게 딕셔너리로 변환합니다.
 
         response에 web, pc, mobile 링크를 저장합니다.
@@ -155,7 +155,7 @@ class Thumbnail(Common):
         validate_type(Link, self.link, disallow_none=False)
         validate_type(bool, self.fixed_ratio)
 
-    def render(self) -> dict:
+    def render(self) -> Dict:
         """Thumbnail 객체를 카카오톡 응답 형식에 맞게 딕셔너리로 변환합니다.
 
         response에 image_url, fixed_ratio, link를 저장합니다.
@@ -253,7 +253,7 @@ class Button(Interaction, Common):
         >>> button.render()
         {'label': '버튼 1', 'action': 'message', 'messageText': '버튼 1 클릭'}
     """
-    available_action_enums: list[ActionEnum] = [
+    available_action_enums: List[ActionEnum] = [
         action for action in ActionEnum]
 
     def __init__(
@@ -264,7 +264,7 @@ class Button(Interaction, Common):
             message_text: Optional[str] = None,
             phone_number: Optional[str] = None,
             block_id: Optional[str] = None,
-            extra: Optional[dict] = None):
+            extra: Optional[Dict] = None):
         """Button 클래스의 생성자 메서드입니다.
 
         Args:
@@ -312,7 +312,7 @@ class Button(Interaction, Common):
             self.block_id)
         super().validate()
 
-    def render(self) -> dict:
+    def render(self) -> Dict:
         """Button 객체를 카카오톡 응답 형식에 맞게 딕셔너리로 변환합니다.
 
         Examples:
@@ -367,7 +367,7 @@ class ListItem(Common, Interaction):
             action: Optional[Union[str, ActionEnum]] = None,
             block_id: Optional[str] = None,
             message_text: Optional[str] = None,
-            extra: Optional[dict] = None):
+            extra: Optional[Dict] = None):
         """ListItem 클래스의 생성자 메서드입니다.
 
         Args:
