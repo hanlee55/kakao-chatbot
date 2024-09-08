@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath('../kakao_chatbot/response'))
 # 프로젝트 정보
 project = 'kakao-chatbot'
 copyright = "Copyright (c) 2024 Han Lee (이한결)\nCopyright (c) 2024 Seoyoung Hong (홍석영)"
-author = "Han Lee <hanlee@indiemaker.kr>, Seoyoung Hong"
+author = "Han Lee <hanlee@indiemaker.kr>, Seokyoung Hong <seokyoung@sio2.kr>"
 release = '0.1.2'
 
 # 확장 모듈 설정
