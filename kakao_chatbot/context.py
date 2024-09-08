@@ -4,7 +4,7 @@
 이를 통일된 형태로 관리하기 위해 별도의 모듈 및 클래스로 정의합니다.
 """
 
-from typing import Optional, Dict
+from typing import Optional
 from .base import ParentPayload, SkillTemplate
 from .validation import validate_int, validate_str, validate_type
 
@@ -56,7 +56,7 @@ class Context(ParentPayload, SkillTemplate):
             name: str,
             lifespan: int,
             ttl: Optional[int] = None,
-            params: Optional[Dict] = None):
+            params: Optional[dict] = None):
         """Context 객체를 초기화합니다."""
         super().__init__()
         self.name = name
@@ -65,7 +65,7 @@ class Context(ParentPayload, SkillTemplate):
         self.params = params
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'Context':
+    def from_dict(cls, data: dict) -> 'Context':
         """딕셔너리를 Context 객체로 변환합니다.
 
         변환할 딕셔너리는 다음과 같은 형태입니다.
@@ -88,7 +88,7 @@ class Context(ParentPayload, SkillTemplate):
         """
         return cls(**data)
 
-    def render(self) -> Dict:
+    def render(self) -> dict:
         """Context 객체를 카카오톡 응답 규칙에 맞게 딕셔너리로 변환합니다.
 
         반환되는 딕셔너리는 다음과 같은 형태입니다.

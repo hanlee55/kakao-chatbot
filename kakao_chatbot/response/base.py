@@ -6,7 +6,7 @@ Classes:
 """
 from abc import ABCMeta
 import json
-from typing import Optional, Union, overload, List, Dict
+from typing import Optional, Union, overload
 
 
 from ..base import BaseModel, SkillTemplate
@@ -26,7 +26,7 @@ class QuickReply(SkillTemplate, Interaction):
 
     Attributes:
         label (str): 사용자에게 보여질 버튼의 텍스트
-        action Union[str, ActionEnum]: 바로가기 응답의 기능, 문자열 또는 Action 열거형
+        action (str | ActionEnum): 바로가기 응답의 기능, 문자열 또는 Action 열거형
         message_text (str): action이 "Message"인 경우 사용자가 챗봇에게 전달할 메시지
         block_id (str): action이 "Block"인 경우 호출할 블록의 ID
         extra (dict): 블록을 호출 시 스킬 서버에 추가로 전달할 데이터
@@ -40,21 +40,21 @@ class QuickReply(SkillTemplate, Interaction):
         >>> quick_reply.render()
         {'label': '바로가기 1', 'action': 'message', 'messageText': '바로가기 1 클릭'}
     """
-    available_action_enums: List[ActionEnum] = [
+    available_action_enums: list[ActionEnum] = [
         ActionEnum.MESSAGE, ActionEnum.BLOCK]
 
     def __init__(
             self,
             label: str,
-            action: Union[str, ActionEnum] = "Message",
+            action: str | ActionEnum = "Message",
             message_text: Optional[str] = None,
             block_id: Optional[str] = None,
-            extra: Optional[Dict] = None):
+            extra: Optional[dict] = None):
         """QuickReply 클래스의 생성자 메서드입니다.
 
         Args:
             label (str): 사용자에게 보여질 버튼의 텍스트
-            action (Union[str, Action], optional): 바로가기 응답의 기능, 문자열 또는 Action 열거형,
+            action (str | Action, optional): 바로가기 응답의 기능, 문자열 또는 Action 열거형,
                                                 기본값은 "Message"
             message_text (str, optional): action이 "Message"인 경우
                                             사용자가 챗봇에게 전달할 메시지, 기본값은 None
@@ -77,7 +77,7 @@ class QuickReply(SkillTemplate, Interaction):
         validate_str(self.label, self.message_text, self.block_id)
         Interaction.validate(self)
 
-    def render(self) -> Dict:
+    def render(self) -> dict:
         """QuickReply 객체를 카카오톡 응답 형식에 맞게 딕셔너리로 변환합니다.
 
         ex) {
@@ -165,13 +165,13 @@ class ValidationResponse(BaseModel):
             self,
             status: str = "SUCCESS",
             value: Optional[str] = None,
-            data: Optional[Dict] = None,
+            data: Optional[dict] = None,
             message: Optional[str] = None):
         self.status = status.upper()
         self.value = value
         self.data = data
         self.message = message
-        self.response_content_obj: Dict[str, str] = {}
+        self.response_content_obj: dict[str, str] = {}
 
     def validate(self):
         """객체를 카카오톡 응답 규칙에 알맞은지 검증합니다.
@@ -186,7 +186,7 @@ class ValidationResponse(BaseModel):
                 "status는 SUCCESS, FAIL, ERROR, IGNORE 중 하나여야 합니다.")
         validate_str(self.value, self.message)
 
-    def render(self) -> Dict:
+    def render(self) -> dict:
         """객체를 카카오톡 출력 요소 형식에 맞게 변환합니다.
 
         각 key에 대한 value가 None인 경우 해당 key를 제거합니다.
@@ -209,7 +209,7 @@ class ValidationResponse(BaseModel):
         self.response_content_obj = self.remove_none_item(template)
         return self.response_content_obj
 
-    def get_dict(self, rendering: bool = True) -> Dict:
+    def get_dict(self, rendering: bool = True) -> dict:
         """카카오톡 출력 요소 형식에 알맞은 dict를 반환합니다.
 
         response_content_obj를 반환합니다.
@@ -315,15 +315,11 @@ class KakaoResponse(BaseModel):
     def __init__(
             self,
             component_list: Optional[
-                Union[
-                    List[ParentComponent], ParentComponent
-                    ]
+                list[ParentComponent] | ParentComponent
             ] = None,
-            quick_replies: Optional[
-                Union[List[QuickReply], QuickReply]
-                ] = None,
-            contexts: Optional[List[Context]] = None,
-            data: Optional[Dict[str, str]] = None):
+            quick_replies: Optional[list[QuickReply] | QuickReply] = None,
+            contexts: Optional[list[Context]] = None,
+            data: Optional[dict[str, str]] = None):
         """KakaoResponse 객체를 생성합니다.
 
         component_list, quick_replies, contexts가 주어지지 않은 경우 빈 리스트로 초기화합니다.
@@ -356,7 +352,7 @@ class KakaoResponse(BaseModel):
 
         self.max_component_count = 3
         self.max_quick_reply_count = 10
-        self.response_content_obj: Dict = {}
+        self.response_content_obj: dict = {}
 
     @property
     def is_empty(self) -> bool:
@@ -410,7 +406,7 @@ class KakaoResponse(BaseModel):
 
         validate_type(dict, self.data)
 
-    def render(self) -> Dict:
+    def render(self) -> dict:
         """객체를 카카오톡 출력 요소 형식에 맞게 변환합니다.
 
         component_list의 render 메서드를 호출하여 카카오톡 출력 요소 형식에 맞게 변환하여
@@ -475,7 +471,7 @@ class KakaoResponse(BaseModel):
         self.component_list.append(component)
         return self
 
-    def get_dict(self, rendering: bool = True) -> Dict:
+    def get_dict(self, rendering: bool = True) -> dict:
         """카카오톡 출력 요소 형식에 알맞은 dict를 반환합니다.
 
         response_content_obj를 반환합니다.
@@ -525,7 +521,7 @@ class KakaoResponse(BaseModel):
             action: str,
             message_text: Optional[str] = None,
             block_id: Optional[str] = None,
-            extra: Optional[Dict] = None) -> "KakaoResponse":
+            extra: Optional[dict] = None) -> "KakaoResponse":
         """quick_replies에 QuickReply 생성 인자로 QuickReply 객체를 생성하여 추가합니다.
 
         Args:
@@ -565,9 +561,7 @@ class KakaoResponse(BaseModel):
         self.quick_replies.append(quick_reply)
         return self
 
-    def add_quick_replies(
-            self,
-            *quick_replies: Union[List[QuickReply], QuickReply]) -> "KakaoResponse":
+    def add_quick_replies(self, *quick_replies: list[QuickReply] | QuickReply) -> "KakaoResponse":
         """quick_replies에 여러 QuickReply를 추가합니다.
 
         quick_replies에 포함된 QuickReply 객체들을 self.quick_replies에 추가합니다.
@@ -575,8 +569,7 @@ class KakaoResponse(BaseModel):
         또한, \*args 방식으로도 호출할 수 있습니다.
 
         Args:
-            quick_replies Union[list[QuickReply], QuickReply]: 
-                추가할 QuickReply 객체 또는 QuickReply 객체의 리스트. 
+            quick_replies (list[QuickReply] | QuickReply): 추가할 QuickReply 객체 또는 QuickReply 객체의 리스트. 
                 - 개별 QuickReply 객체들을 인자로 나열할 수도 있습니다.
 
         Returns:
@@ -598,7 +591,7 @@ class KakaoResponse(BaseModel):
             name: str,
             lifespan: int,
             ttl: Optional[int] = None,
-            params: Optional[Dict] = None) -> "KakaoResponse":
+            params: Optional[dict] = None) -> "KakaoResponse":
         """Context 생성 인자로 Context 객체를 생성하여 contexts에 추가합니다.
 
         Args:
@@ -651,19 +644,19 @@ class KakaoResponse(BaseModel):
     def __add__(self, other: "Context") -> "KakaoResponse": ...
 
     @overload
-    def __add__(self, other: List[QuickReply]) -> "KakaoResponse": ...
+    def __add__(self, other: list[QuickReply]) -> "KakaoResponse": ...
 
     @overload
-    def __add__(self, other: List[ParentComponent]) -> "KakaoResponse": ...
+    def __add__(self, other: list[ParentComponent]) -> "KakaoResponse": ...
 
     @overload
-    def __add__(self, other: List[Context]) -> "KakaoResponse": ...
+    def __add__(self, other: list[Context]) -> "KakaoResponse": ...
 
     def __add__(
             self,
             other: Union[
                 QuickReply, ParentComponent,
-                "KakaoResponse", Context, List
+                "KakaoResponse", Context, list
             ]
     ) -> "KakaoResponse":
         """합 연산자 정의

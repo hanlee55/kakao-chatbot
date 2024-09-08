@@ -11,7 +11,7 @@ classes:
     - ItemListSummary: ItemCard의 아이템 리스트 요약을 담는 클래스
     - ItemProfile: ItemCard의 프로필을 담는 클래스
 """
-from typing import Optional, Dict
+from typing import Optional
 
 from .common import Common, Link
 from ...validation import validate_str, validate_int
@@ -134,7 +134,7 @@ class ImageTitle(Common):
         validate_str(self.title, disallow_none=True)
         validate_str(self.description)
 
-    def render(self) -> Dict:
+    def render(self) -> dict:
         """ImageTitle을 렌더링합니다.
 
         Returns:
@@ -188,7 +188,7 @@ class Item(Common):
             AssertionError: description이 None이거나 str이 아닐 경우 발생합니다."""
         validate_str(self.title, self.description, disallow_none=True)
 
-    def render(self) -> Dict:
+    def render(self) -> dict:
         """Item을 렌더링합니다.
 
         Returns:
@@ -260,7 +260,7 @@ class ItemProfile(Common):
         validate_str(self.image_url)
         validate_int(self.width, self.height)
 
-    def render(self) -> Dict:
+    def render(self) -> dict:
         """ItemProfile을 렌더링합니다.
 
         Returns:

@@ -15,7 +15,7 @@ classes:
     - Payload: Payload 객체를 저장하는 클래스
 """
 import json
-from typing import Optional, Union, List, Dict
+from typing import Optional
 
 from .base import ParentPayload
 from .context import Context
@@ -37,7 +37,7 @@ class Param(ParentPayload):
 
     Attributes:
         origin (str): 사용자 발화에서 직접 추출한 파라미터의 원본 텍스트.
-        value Union[str, dict]: 파라미터의 실제 값. 문자열 또는 딕셔너리 형태일 수 있으며,
+        value (str | dict): 파라미터의 실제 값. 문자열 또는 딕셔너리 형태일 수 있으며,
                             딕셔너리 형태인 경우, 추가적인 상세 정보를 포함합니다.
         group_name (str): 파라미터가 속한 그룹의 이름. 파라미터를 분류하는 데 사용됩니다.
     """
@@ -45,14 +45,14 @@ class Param(ParentPayload):
     def __init__(
             self,
             origin: str,
-            value: Union[str, Dict],
+            value: str | dict,
             group_name: str = '',
             **kwargs):
         """Param 객체를 생성하는 메서드
 
         Args:
             origin (str): 사용자가 입력한 발화에서 추출한 파라미터의 원본
-            value Union[str, dict]: 파라미터의 대표값
+            value (str | dict): 파라미터의 대표값
             group_name (str): 파라미터의 그룹 이름 (기본값: '')
             **kwargs: 추가적인 정보
         """
@@ -63,7 +63,7 @@ class Param(ParentPayload):
             setattr(self, k, v)
 
     @classmethod
-    def from_dict(cls, data: Dict):
+    def from_dict(cls, data: dict):
         """딕셔너리에서 Param 객체를 생성하는 클래스 메서드
 
         이 메서드는 'detailParams'에서 제공된 파라미터 정보를 바탕으로 Param 객체를 생성합니다.
@@ -112,9 +112,9 @@ class Action(ParentPayload):
             self,
             ID: str,  # pylint: disable=invalid-name
             name: str,
-            params: Dict[str, str],
-            detail_params: Dict[str, Param],
-            client_extra: Dict):
+            params: dict[str, str],
+            detail_params: dict[str, Param],
+            client_extra: dict):
         """Action 클래스의 인스턴스를 초기화합니다.
 
         Args:
@@ -130,7 +130,7 @@ class Action(ParentPayload):
         self.client_extra = client_extra
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'Action':
+    def from_dict(cls, data: dict) -> 'Action':
         """딕셔너리에서 Action 객체를 생성하는 클래스 메서드입니다.
 
         제공해야 하는 딕셔너리는 payload의 'action'입니다.
@@ -203,7 +203,7 @@ class Bot(ParentPayload):
         self.name = name
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'Bot':
+    def from_dict(cls, data: dict) -> 'Bot':
         """딕셔너리에서 Bot 객체를 생성하는 클래스 메서드입니다.
 
         제공해야 하는 딕셔너리는 payload의 'bot'입니다.
@@ -244,7 +244,7 @@ class Knowledge(ParentPayload):
             self,
             answer: str,
             question: str,
-            categories: List[str],
+            categories: list[str],
             landing_url: str,
             image_url: str):
         """Knowledge 클래스의 인스턴스를 초기화합니다."""
@@ -255,7 +255,7 @@ class Knowledge(ParentPayload):
         self.image_url = image_url
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'Knowledge':
+    def from_dict(cls, data: dict) -> 'Knowledge':
         """딕셔너리에서 Knowledge 객체를 생성하는 클래스 메서드입니다.
 
         제공해야 하는 딕셔너리는 payload의 'intent'의 'extra'의
@@ -295,8 +295,8 @@ class IntentExtra(ParentPayload):
 
     def __init__(
             self,
-            reson: Optional[Dict] = None,
-            matched_knowledges: Optional[List[Knowledge]] = None):
+            reson: Optional[dict] = None,
+            matched_knowledges: Optional[list[Knowledge]] = None):
         """IntentExtra 클래스의 인스턴스를 초기화합니다.
 
         Args:
@@ -309,7 +309,7 @@ class IntentExtra(ParentPayload):
         self.matched_knowledges = matched_knowledges
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'IntentExtra':
+    def from_dict(cls, data: dict) -> 'IntentExtra':
         """딕셔너리에서 IntentExtra 객체를 생성하는 클래스 메서드입니다.
 
         제공해야 하는 딕셔너리는 payload의 'intent'의 'extra'입니다.
@@ -318,8 +318,8 @@ class IntentExtra(ParentPayload):
         Args:
             data (dict): IntentExtra 정보가 담긴 딕셔너리.
         """
-        reason: Dict = data.get('reason', {})
-        knowledges: Dict = data.get('matched_knowledges', {})
+        reason: dict = data.get('reason', {})
+        knowledges: dict = data.get('matched_knowledges', {})
         matched_knowledges = [Knowledge.from_dict(
             knowledge) for knowledge in knowledges]
         return cls(reason, matched_knowledges)
@@ -351,7 +351,7 @@ class Intent(ParentPayload):
         self.extra = extra
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'Intent':
+    def from_dict(cls, data: dict) -> 'Intent':
         """딕셔너리에서 Intent 객체를 생성하는 클래스 메서드입니다.
 
         제공해야 하는 딕셔너리는 payload의 'intent'입니다.
@@ -397,7 +397,7 @@ class UserProperties(ParentPayload):
         self.is_friend = is_friend
 
     @classmethod
-    def from_dict(cls, data: Dict):
+    def from_dict(cls, data: dict):
         """딕셔너리에서 UserProperties 객체를 생성하는 클래스 메서드
 
         전달받는 딕셔너리는 payload의 'user'의 'properties'입니다.
@@ -440,7 +440,7 @@ class User(ParentPayload):
             self,
             ID: str,  # pylint: disable=invalid-name
             TYPE: str,  # pylint: disable=invalid-name
-            properties: Optional[Dict] = None):
+            properties: Optional[dict] = None):
         """User 객체를 생성하는 메서드
 
         properties가 None인 경우 빈 딕셔너리로 초기화합니다.
@@ -453,7 +453,7 @@ class User(ParentPayload):
         self.properties = properties
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'User':
+    def from_dict(cls, data: dict) -> 'User':
         """딕셔너리에서 User 객체를 생성하는 클래스 메서드
 
         전달받는 딕셔너리는 payload의 'userRequest'의 'user'입니다.
@@ -505,11 +505,11 @@ class UserRequest(ParentPayload):
     def __init__(
             self,
             timezone: str,
-            block: Dict,
+            block: dict,
             utterance: str,
             lang: str,
             user: User,
-            params: Optional[Dict] = None,
+            params: Optional[dict] = None,
             callback_url: Optional[str] = None):
         """UserRequest 객체를 생성하는 메서드"""
         self.timezone = timezone
@@ -521,7 +521,7 @@ class UserRequest(ParentPayload):
         self.callback_url = callback_url
 
     @classmethod
-    def from_dict(cls, data: Dict):
+    def from_dict(cls, data: dict):
         """딕셔너리에서 UserRequest 객체를 생성하는 클래스 메서드
 
         전달받는 딕셔너리는 payload의 'userRequest'입니다.
@@ -570,11 +570,11 @@ class ValidationPayload(ParentPayload):
             bot: Bot,
             is_in_slot_filling: bool,
             lang: str,
-            params: Dict[str, str],
+            params: dict[str, str],
             timezone: str,
             user: User,
             utterance: str,
-            value: Dict[str, str]):
+            value: dict[str, str]):
         self.bot = bot
         self.is_in_slot_filling = is_in_slot_filling
         self.lang = lang
@@ -585,7 +585,7 @@ class ValidationPayload(ParentPayload):
         self.value = value
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'ValidationPayload':
+    def from_dict(cls, data: dict) -> 'ValidationPayload':
         """딕셔너리에서 ValidationPayload 객체를 생성하는 클래스 메서드
 
         딕셔너리에서 각 키에 해당하는 값을 추출하여 ValidationPayload 객체를 생성합니다.
@@ -701,7 +701,7 @@ class Payload(ParentPayload):
             user_request: UserRequest,
             bot: Bot,
             action: Action,
-            contexts: Optional[List[Context]] = None):
+            contexts: Optional[list[Context]] = None):
         """Payload 객체를 생성하는 메서드
 
         context가 None인 경우 빈 딕셔너리로 초기화합니다.
@@ -722,7 +722,7 @@ class Payload(ParentPayload):
         self.contexts = contexts
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'Payload':
+    def from_dict(cls, data: dict) -> 'Payload':
         """딕셔너리에서 Payload 객체를 생성하는 클래스 메서드
 
         전달받는 딕셔너리는 skill server에서 전달받은 전체 data입니다.
@@ -778,7 +778,7 @@ class Payload(ParentPayload):
         return None
 
     @property
-    def params(self) -> Optional[Dict[str, str]]:
+    def params(self) -> Optional[dict[str, str]]:
         """액션에 포함된 파라미터 정보를 반환합니다.
 
         액션에 포함된 파라미터 정보는 action.params로부터 가져옵니다.
@@ -792,7 +792,7 @@ class Payload(ParentPayload):
         return None
 
     @property
-    def detail_params(self) -> Optional[Dict[str, Param]]:
+    def detail_params(self) -> Optional[dict[str, Param]]:
         """액션에 포함된 파라미터 세부 정보를 반환합니다.
 
         액션에 포함된 파라미터 세부 정보는 action.detail_params로부터 가져옵니다.

@@ -8,7 +8,7 @@ classes:
     - Interaction: 카카오톡 출력 요소 Button과 QuickReply의 상위 클래스
 """
 from enum import Enum
-from typing import Any, Optional, Tuple, List, Union, Dict
+from typing import Any, Optional
 
 from ..base import BaseModel
 from ..customerror import InvalidActionError
@@ -36,7 +36,7 @@ class ActionEnum(Enum):
     OPERATOR = "operator"
 
     @property
-    def uses_fields(self) -> Tuple[Optional[List[str]], Optional[List[str]]]:
+    def uses_fields(self) -> tuple[Optional[list[str]], Optional[list[str]]]:
         """각 action 유형이 사용하는 필드를 반환합니다.
 
         각 action 유형에 필요한 필드와 선택적 필드를 반환합니다.
@@ -76,23 +76,23 @@ class Interaction(BaseModel):
         available_action_enums (list[ActionEnum]): 사용 가능한 Action 열거형의 리스트
 
     Attributes:
-        action Union[str, Action]: 버튼의 동작, 문자열 또는 Action 열거형
-        extra (dict, optional): 블록을 호출 시 스킬 서버에 추가로 전달할 데이터
+        action (str | Action): 버튼의 동작, 문자열 또는 Action 열거형
+        extra (dict | None): 블록을 호출 시 스킬 서버에 추가로 전달할 데이터
     """
-    available_action_enums: List[ActionEnum] = []  # Action 열거형의 리스트 오버라이드 필요
+    available_action_enums: list[ActionEnum] = []  # Action 열거형의 리스트 오버라이드 필요
 
     def __init__(
             self,
-            action: Optional[Union[str, ActionEnum]],
-            extra: Optional[Dict] = None):
+            action: Optional[str | ActionEnum],
+            extra: Optional[dict] = None):
         """Interaction 클래스의 생성자 메서드입니다.
 
         action을 Action 열거형으로 변환하여 저장합니다.
         action이 None인 경우 None을 저장합니다.
 
         Args:
-            action (Union[str, Action]): 버튼의 동작, 문자열 또는 Action 열거형
-            extra (dict, optional): 블록을 호출 시 스킬 서버에 추가로 전달할 데이터
+            action (str | Action): 버튼의 동작, 문자열 또는 Action 열거형
+            extra (dict | None): 블록을 호출 시 스킬 서버에 추가로 전달할 데이터
         """
         super().__init__()
         self.action = None
@@ -101,14 +101,14 @@ class Interaction(BaseModel):
         self.extra = extra
 
     @staticmethod
-    def process_action(action: Union[str, ActionEnum]) -> ActionEnum:
+    def process_action(action: str | ActionEnum) -> ActionEnum:
         """문자열 또는 Action 열거형 인스턴스를 Action 열거형으로 변환합니다.
 
         action이 문자열인 경우 대문자로 변환하여 Action 열거형에 있는지 확인합니다.
         Action 열거형에 없는 경우 InvalidActionError를 발생시킵니다.
 
         Args:
-            action (Union[str, Action]): QuickReply의 action
+            action (str | Action): QuickReply의 action
 
         Returns:
             Action: action을 나타내는 Action 열거형
@@ -176,7 +176,7 @@ class Interaction(BaseModel):
                 validate_str(
                     getattr(self, camel_to_snake(field)))
 
-    def render(self) -> Dict:
+    def render(self) -> dict:
         """Interaction 객체를 카카오톡 응답 형식에 맞게 딕셔너리로 변환합니다.
 
         Interaction 객체의 label, action, extra를 딕셔너리로 변환합니다.
@@ -191,7 +191,7 @@ class Interaction(BaseModel):
 
         self.validate()
 
-        response: Dict[str, Any] = {
+        response: dict[str, Any] = {
             "action": self.action.value,
         }
 

@@ -10,7 +10,7 @@ Classes:
     - ItemCardComponent: 카카오톡 출력 요소 ItemCard의 객체를 생성하는 클래스
 """
 from abc import ABCMeta, abstractmethod
-from typing import Optional, overload, Union, List, Dict
+from typing import Optional, overload
 
 
 from ..base import ParentComponent
@@ -41,7 +41,7 @@ class ParentCardComponent(ParentComponent, metaclass=ABCMeta):
         buttons (list[Button], optional): 버튼 객체입니다.
     """
 
-    def __init__(self, buttons: Optional[List[Button]] = None):
+    def __init__(self, buttons: Optional[list[Button]] = None):
         """ParentCard 객체를 생성합니다.
 
         buttons가 None인 경우 빈 리스트로 초기화합니다.
@@ -79,19 +79,19 @@ class ParentCardComponent(ParentComponent, metaclass=ABCMeta):
     def add_button(
             self,
             label: str,
-            action: Union[str, ActionEnum],
+            action: str | ActionEnum,
             web_link_url: Optional[str] = None,
             message_text: Optional[str] = None,
             phone_number: Optional[str] = None,
             block_id: Optional[str] = None,
-            extra: Optional[Dict] = None) -> "ParentCardComponent":
+            extra: Optional[dict] = None) -> "ParentCardComponent":
         """버튼 생성 인자로 버튼을 추가합니다.
 
         버튼 생성 인자를 받아 Button 객체를 생성하여 버튼 리스트에 추가합니다.
 
         Args:
             label (str): 버튼에 적히는 문구입니다.
-            action Union[str, Action]: 버튼 클릭시 수행될 작업입니다.
+            action (str | Action): 버튼 클릭시 수행될 작업입니다.
                                     (webLink, message, phone,
                                     block, share, operator)
             web_link_url (Optional[str]): 웹 브라우저를 열고 이동할 주소입니다.
@@ -182,7 +182,7 @@ class TextCardComponent(ParentCardComponent):
             self,
             title: Optional[str] = None,
             description: Optional[str] = None,
-            buttons: Optional[List[Button]] = None):
+            buttons: Optional[list[Button]] = None):
         """TextCardComponent 객체를 생성합니다.
 
         title과 description 중 최소 하나는 None이 아니어야 합니다.
@@ -291,7 +291,7 @@ class BasicCardComponent(ParentCardComponent):
             thumbnail: Thumbnail,
             title: Optional[str] = None,
             description: Optional[str] = None,
-            buttons: Optional[List[Button]] = None,
+            buttons: Optional[list[Button]] = None,
             forwardable: bool = False):
         """BasicCardComponent 객체를 생성합니다.
 
@@ -441,10 +441,10 @@ class CommerceCardComponent(ParentCardComponent):
     def __init__(
         self,
         price: int,
-        thumbnails: Union[List[Thumbnail], Thumbnail],
+        thumbnails: list[Thumbnail] | Thumbnail,
         title: Optional[str] = None,
         description: Optional[str] = None,
-        buttons: Optional[List[Button]] = None,
+        buttons: Optional[list[Button]] = None,
         profile: Optional[Profile] = None,
         currency: Optional[str] = None,
         discount: Optional[int] = None,
@@ -489,7 +489,7 @@ class CommerceCardComponent(ParentCardComponent):
             self.discount_rate, self.discount_price)
         validate_type(Profile, self.profile)
 
-    def render(self) -> Dict:
+    def render(self) -> dict:
         """객체의 응답 내용을 반환합니다.(super 참고)
 
         CommerceCardComponent 객체의 응답 내용을 반환합니다.
@@ -577,16 +577,16 @@ class ListCardComponent(ParentCardComponent):
 
     def __init__(
             self,
-            header: Union[ListItem, str],
-            items: Optional[List[ListItem]] = None,
-            buttons: Optional[List[Button]] = None,
+            header: ListItem | str,
+            items: Optional[list[ListItem]] = None,
+            buttons: Optional[list[Button]] = None,
             max_buttons: int = 2,
             max_items: int = 5
     ):
         """ListCard 객체를 생성합니다.
 
         Args:
-            header Union[ListItem, str]: 리스트 카드의 상단 항목 str인 경우 ListItem으로 변환됩니다.
+            header (ListItem | str): 리스트 카드의 상단 항목 str인 경우 ListItem으로 변환됩니다.
             items (ListItems): 리스트 카드의 각각 아이템
             buttons (Optional[list[Button]], optional): 리스트 카드의 버튼들.
                                                     Defaults to None.
@@ -661,10 +661,10 @@ class ListCardComponent(ParentCardComponent):
             description: Optional[str] = None,
             image_url: Optional[str] = None,
             link: Optional[Link] = None,
-            action: Optional[Union[str, ActionEnum]] = None,
+            action: Optional[str | ActionEnum] = None,
             block_id: Optional[str] = None,
             message_text: Optional[str] = None,
-            extra: Optional[Dict] = None) -> "ListCardComponent":
+            extra: Optional[dict] = None) -> "ListCardComponent":
         """ListCardComponent에 아이템을 ListItem 생성 인자로 추가합니다.
 
         Args:
@@ -672,7 +672,7 @@ class ListCardComponent(ParentCardComponent):
             description (str, optional): item의 설명
             image_url (str, optional): item의 우측 안내 사진
             link (Link, optional): item 클릭 시 동작할 링크
-            action (Union[str, Action], optional):
+            action (str | Action, optional):
                             itaem 클릭 시 수행될 작업(block 또는 message)
             block_id (str, optional): action이 block인 경우 block_id를 갖는 블록을 호출
             message_text (str, optional):
@@ -839,7 +839,7 @@ class ItemCardComponent(ParentCardComponent):
 
     def __init__(
             self,
-            item_list: List[Item],
+            item_list: list[Item],
             thumbnail: Optional[ItemThumbnail] = None,
             head: Optional[str] = None,
             profile: Optional[ItemProfile] = None,
@@ -848,7 +848,7 @@ class ItemCardComponent(ParentCardComponent):
             item_list_summary: Optional[ItemListSummary] = None,
             title: Optional[str] = None,
             description: Optional[str] = None,
-            buttons: Optional[List[Button]] = None,
+            buttons: Optional[list[Button]] = None,
             button_layout: Optional[str] = None):
         """ItemCardComponent 객체를 생성합니다.
 

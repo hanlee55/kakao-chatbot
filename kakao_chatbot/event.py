@@ -5,7 +5,7 @@ EventAPI 클래스로 제공되는 객체를 이용하여 카카오톡 챗봇으
 
 import datetime
 import json
-from typing import Optional, overload, List, Dict
+from typing import Optional, overload
 from .base import BaseModel, ParentPayload
 from .validation import validate_str, validate_type
 
@@ -36,7 +36,7 @@ class EventUser(BaseModel):
             self,
             id_type: str,
             ID: str,  # pylint: disable=invalid-name
-            properties: Optional[Dict[str, str]] = None):
+            properties: Optional[dict[str, str]] = None):
         """EventUser의 생성자 메서드입니다.
 
         Args:
@@ -120,10 +120,10 @@ class EventAPI(BaseModel):
             bot_id: str,
             api_key: str,
             event: str,
-            users: Optional[List[EventUser]] = None,
-            data: Optional[Dict[str, str]] = None,
-            params: Optional[Dict[str, str]] = None,
-            option: Optional[Dict[str, str]] = None,
+            users: Optional[list[EventUser]] = None,
+            data: Optional[dict[str, str]] = None,
+            params: Optional[dict[str, str]] = None,
+            option: Optional[dict[str, str]] = None,
             is_devchannel: Optional[bool] = False,
             max_user: int = 100):
         """EventAPI의 생성자 메서드입니다.
@@ -226,7 +226,7 @@ class EventAPI(BaseModel):
         self,
         id_type: str,
         ID: str,  # pylint: disable=invalid-name
-        properties: Optional[Dict[str, str]] = None
+        properties: Optional[dict[str, str]] = None
     ) -> "EventAPI":
         """Event를 받을 사용자 정보를 EventUser 객체 생성 인자로 추가합니다.
 
@@ -259,7 +259,7 @@ class EventAPI(BaseModel):
         return self
 
     @property
-    def headers(self) -> Dict[str, str]:
+    def headers(self) -> dict[str, str]:
         """EventAPI의 헤더를 반환합니다.
 
         api_key가 "KakaoAK "로 시작하지 않는 경우 "KakaoAK "를 자동으로 추가합니다.
@@ -290,7 +290,7 @@ class EventAPI(BaseModel):
         return f"https://bot-api.kakao.com/v2/bots/{self.bot_id}/talk"
 
     @property
-    def body(self) -> Dict:
+    def body(self) -> dict:
         """EventAPI의 body를 반환합니다.
 
         self.render()로 생성된 딕셔너리를 반환합니다.
@@ -328,7 +328,7 @@ class EventAPIResponse(ParentPayload):
         self.timestamp = timestamp
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'EventAPIResponse':
+    def from_dict(cls, data: dict) -> 'EventAPIResponse':
         """EventAPIResponse 객체를 딕셔너리로부터 생성합니다.
 
         Args:
@@ -420,7 +420,7 @@ class CheckEventAPI(BaseModel):
         return f"https://bot-api.kakao.com/v2/tasks/{self.task_id}"
 
     @property
-    def headers(self) -> Dict[str, str]:
+    def headers(self) -> dict[str, str]:
         """CheckEventAPI를 이용해 요청할 헤더를 반환합니다.
 
         api_key가 "KakaoAK "로 시작하지 않는 경우 "KakaoAK "를 자동으로 추가합니다.
@@ -450,7 +450,7 @@ class CheckEventAPIResponse(ParentPayload):
             status: str,
             all_request_count: int,
             success_count: int,
-            fail: Optional[Dict] = None):
+            fail: Optional[dict] = None):
         """CheckEventAPIResponse의 생성자 메서드입니다.
 
         Args:
@@ -467,7 +467,7 @@ class CheckEventAPIResponse(ParentPayload):
         self.fail = fail
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'CheckEventAPIResponse':
+    def from_dict(cls, data: dict) -> 'CheckEventAPIResponse':
         """CheckEventAPIResponse 객체를 딕셔너리로부터 생성합니다.
 
         Args:
@@ -510,7 +510,7 @@ class CheckEventAPIResponse(ParentPayload):
         return self.fail.get("count", 0)
 
     @property
-    def fail_list(self) -> List[Dict[str, str]]:
+    def fail_list(self) -> list[dict[str, str]]:
         """CheckEventAPI의 실패한 사용자 리스트를 반환합니다.
 
         Returns:
