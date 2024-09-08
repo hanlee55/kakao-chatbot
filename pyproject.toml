@@ -2,20 +2,13 @@
 name = "kakao-chatbot"
 version = "0.1.2"
 description = "Effortlessly build KakaoTalk chatbots with Python objects - say goodbye to complex JSON and hello to streamlined development."
-authors = ["Han Lee <hanlee@indiemaker.kr>", "Seokyoung Hong"]
+authors = ["Han Lee <hanlee@indiemaker.kr>", "Seokyoung Hong <seokyoung@sio2.kr>"]
 readme = "README.md"
 packages = [{include = "kakao_chatbot"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 
-[tool.poetry.dev-dependencies]
-sphinx = { version = "^7.3.7", python = ">=3.10" }
-sphinx-autodoc-typehints = { version = "^2.1.1", python = ">=3.9" }
-sphinx-rtd-theme = { version = "^2.0.0", python = ">=3.10" }
-sphinx_copybutton = { version = "^0.5.2", python = ">=3.10" }
-myst-parser = { version = "^3.0.1", python = ">=3.10" }
-linkify-it-py = { version = "^2.0.3", python = ">=3.10" }
 
 [build-system]
 requires = ["poetry-core"]
