@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "kakao-chatbot-docs"
+version = "0.1.2"
+description = "This is the project for the documentation of kakao-chatbot library."
+authors = ["Seokyoung-Hong <seokyoung@sio2.kr>", "Han Lee <hanlee@indiemaker.kr>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^7.3.7"
+sphinx-autodoc-typehints = "^2.1.1"
+sphinx-rtd-theme = "^2.0.0"
+sphinx-copybutton = "^0.5.2"
+myst-parser = "^3.0.1"
+linkify-it-py = "^2.0.3"
+kakao-chatbot = {path = ".."}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
