@@ -52,11 +52,12 @@ class Context(ParentPayload, SkillTemplate):
     """
 
     def __init__(
-            self,
-            name: str,
-            lifespan: int,
-            ttl: Optional[int] = None,
-            params: Optional[dict] = None):
+        self,
+        name: str,
+        lifespan: int,
+        ttl: Optional[int] = None,
+        params: Optional[dict] = None,
+    ):
         """Context 객체를 초기화합니다."""
         super().__init__()
         self.name = name
@@ -65,7 +66,7 @@ class Context(ParentPayload, SkillTemplate):
         self.params = params
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Context':
+    def from_dict(cls, data: dict) -> "Context":
         """딕셔너리를 Context 객체로 변환합니다.
 
         변환할 딕셔너리는 다음과 같은 형태입니다.
@@ -111,7 +112,7 @@ class Context(ParentPayload, SkillTemplate):
             "name": self.name,
             "lifeSpan": self.lifespan,
             "ttl": self.ttl,
-            "params": self.params
+            "params": self.params,
         }
         return self.remove_none_item(response)
 

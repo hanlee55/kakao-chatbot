@@ -7,6 +7,7 @@ classes:
     - ActionEnum: 카카오톡 출력 요소의 버튼의 동작을 나타내는 열거형 클래스
     - Interaction: 카카오톡 출력 요소 Button과 QuickReply의 상위 클래스
 """
+
 from enum import Enum
 from typing import Any, Optional
 
@@ -28,6 +29,7 @@ class ActionEnum(Enum):
     Returns:
         str: action 유형
     """
+
     WEBLINK = "webLink"
     MESSAGE = "message"
     PHONE = "phone"
@@ -47,13 +49,13 @@ class ActionEnum(Enum):
             tuple[Optional[list[str]], Optional[list[str]]]: 필요한 필드와 선택적 필드
         """
         if self == ActionEnum.WEBLINK:
-            return ['webLinkUrl'], None
+            return ["webLinkUrl"], None
         elif self == ActionEnum.MESSAGE:
             return ["messageText"], None
         elif self == ActionEnum.PHONE:
             return ["phoneNumber"], None
         elif self == ActionEnum.BLOCK:
-            return ["blockId"], ['messageText']
+            return ["blockId"], ["messageText"]
         elif self == ActionEnum.SHARE:
             return None, None
         elif self == ActionEnum.OPERATOR:
@@ -79,12 +81,14 @@ class Interaction(BaseModel):
         action (str | Action): 버튼의 동작, 문자열 또는 Action 열거형
         extra (dict | None): 블록을 호출 시 스킬 서버에 추가로 전달할 데이터
     """
-    available_action_enums: list[ActionEnum] = []  # Action 열거형의 리스트 오버라이드 필요
+
+    available_action_enums: list[
+        ActionEnum
+    ] = []  # Action 열거형의 리스트 오버라이드 필요
 
     def __init__(
-            self,
-            action: Optional[str | ActionEnum],
-            extra: Optional[dict] = None):
+        self, action: Optional[str | ActionEnum], extra: Optional[dict] = None
+    ):
         """Interaction 클래스의 생성자 메서드입니다.
 
         action을 Action 열거형으로 변환하여 저장합니다.
@@ -120,7 +124,8 @@ class Interaction(BaseModel):
             (str, ActionEnum),
             action,
             disallow_none=True,
-            exception_type=InvalidActionError)
+            exception_type=InvalidActionError,
+        )
 
         # action이 문자열인 경우 Action 열거형으로 변환
         if isinstance(action, str):
@@ -142,7 +147,6 @@ class Interaction(BaseModel):
         Raises:
             InvalidActionError: action이 문자열 또는 Action 열거형이 아닌 경우
         """
-
         validate_type(dict, self.extra)
 
         # action이 None인 경우 검사하지 않음
@@ -153,28 +157,23 @@ class Interaction(BaseModel):
             (str, ActionEnum),
             self.action,
             disallow_none=True,
-            exception_type=InvalidActionError)
+            exception_type=InvalidActionError,
+        )
 
         # action이 ActionEnum에 있는지 확인
         if self.action not in self.available_action_enums:
             raise InvalidActionError(f"유효하지 않은 action 값: {self.action}")
 
         # action에 따라 사용하는 필드가 있는경우 validate
-        (
-            required_fields,
-            optional_fields
-        ) = self.action.uses_fields
+        (required_fields, optional_fields) = self.action.uses_fields
 
         if required_fields is not None:
             for field in required_fields:
-                validate_str(
-                    getattr(self, camel_to_snake(field)),
-                    disallow_none=True)
+                validate_str(getattr(self, camel_to_snake(field)), disallow_none=True)
 
         if optional_fields is not None:
             for field in optional_fields:
-                validate_str(
-                    getattr(self, camel_to_snake(field)))
+                validate_str(getattr(self, camel_to_snake(field)))
 
     def render(self) -> dict:
         """Interaction 객체를 카카오톡 응답 형식에 맞게 딕셔너리로 변환합니다.
@@ -196,10 +195,7 @@ class Interaction(BaseModel):
         }
 
         # action에 따라 필요한 필드가 있는경우 response에 저장
-        (
-            required_fields,
-            optional_fields
-        ) = self.action.uses_fields
+        (required_fields, optional_fields) = self.action.uses_fields
 
         if required_fields is not None:
             for camel in required_fields:
