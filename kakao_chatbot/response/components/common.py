@@ -269,7 +269,7 @@ class Button(Interaction, Common):
 
         Args:
             label (str): 버튼에 적히는 문구입니다.
-            action Union[str, Action]: 버튼 클릭시 수행될 작업입니다.
+            action (Union[str, Action]): 버튼 클릭시 수행될 작업입니다.
                                     (webLink, message, phone,
                                     block, share, operator)
             web_link_url (Optional[str]): 웹 브라우저를 열고 이동할 주소입니다.

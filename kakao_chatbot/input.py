@@ -43,12 +43,14 @@ class Param(ParentPayload):
         group_name (str): 파라미터가 속한 그룹의 이름. 파라미터를 분류하는 데 사용됩니다.
     """
 
-    def __init__(self, origin: str, value: Union[str, Dict], group_name: str = "", **kwargs):
+    def __init__(
+        self, origin: str, value: Union[str, Dict], group_name: str = "", **kwargs
+    ):
         """Param 객체를 생성하는 메서드입니다.
 
         Args:
             origin (str): 사용자가 입력한 발화에서 추출한 파라미터의 원본
-            value Union[str, dict]: 파라미터의 대표값
+            value (Union[str, dict]): 파라미터의 대표값
             group_name (str): 파라미터의 그룹 이름 (기본값: '')
             **kwargs: 추가적인 정보
         """
@@ -166,7 +168,7 @@ class Action(ParentPayload):
                    {'detail_param_key': Param('origin_text', 'param_value')},
                    {'key': 'value'})
         """
-        ID = data.get("id", "")  
+        ID = data.get("id", "")
         name = data.get("name", "")
         params = data.get("params", {})
         detail_params = {
@@ -194,7 +196,7 @@ class Bot(ParentPayload):
         name (str): 봇의 이름입니다.
     """
 
-    def __init__(self, ID: str, name: str):  
+    def __init__(self, ID: str, name: str):
         """Bot 클래스의 인스턴스를 초기화합니다.
 
         Args:
@@ -218,7 +220,7 @@ class Bot(ParentPayload):
         Returns:
             Bot: 생성된 Bot 인스턴스.
         """
-        ID = data.get("id", "")  
+        ID = data.get("id", "")
         name = data.get("name", "")
         return cls(ID=ID, name=name)
 
@@ -344,7 +346,7 @@ class Intent(ParentPayload):
 
     def __init__(
         self,
-        ID: str,  
+        ID: str,
         name: str,
         extra: IntentExtra,
     ):
@@ -366,7 +368,7 @@ class Intent(ParentPayload):
         Returns:
             Intent: 생성된 Intent 인스턴스.
         """
-        ID = data.get("id", "")  
+        ID = data.get("id", "")
         name = data.get("name", "")
         extra = IntentExtra.from_dict(data.get("extra", {}))
         return cls(ID=ID, name=name, extra=extra)
@@ -471,8 +473,8 @@ class User(ParentPayload):
         Returns:
             User: 생성된 User 객체
         """
-        ID = data.get("id", "")  
-        TYPE = data.get("type", "")  
+        ID = data.get("id", "")
+        TYPE = data.get("type", "")
         properties = data.get("properties", {})
         return cls(ID=ID, TYPE=TYPE, properties=properties)
 
@@ -570,15 +572,6 @@ class ValidationPayload(ParentPayload):
     """
 
     def __init__(
-            self,
-            bot: Bot,
-            is_in_slot_filling: bool,
-            lang: str,
-            params: Dict[str, str],
-            timezone: str,
-            user: User,
-            utterance: str,
-            value: Dict[str, str]):
         self,
         bot: Bot,
         is_in_slot_filling: bool,

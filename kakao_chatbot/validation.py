@@ -20,10 +20,10 @@ def validate_type(
     exception_type은 예외를 발생시킬 때 사용할 예외 타입을 지정합니다.
 
     Args:
-        allowed_types Union[tuple, object]: 허용할 타입
+        allowed_types (Union[tuple, object]): 허용할 타입
         args: 검사할 값들
         disallow_none (bool): None을 허용할지 여부
-        exception_type: 예외 타입
+        exception_type : 예외 타입
     """
     if not isinstance(allowed_types, tuple):
         allowed_types = (allowed_types,)

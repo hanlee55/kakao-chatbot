@@ -589,7 +589,7 @@ class KakaoResponse(BaseModel):
         또한, \*args 방식으로도 호출할 수 있습니다.
 
         Args:
-            quick_replies Union[list[QuickReply], QuickReply]:
+            quick_replies (Union[list[QuickReply], QuickReply]):
                 추가할 QuickReply 객체 또는 QuickReply 객체의 리스트.
                 - 개별 QuickReply 객체들을 인자로 나열할 수도 있습니다.
 

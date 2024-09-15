@@ -69,44 +69,14 @@ class ParentCardComponent(ParentComponent, metaclass=ABCMeta):
 
     @overload
     def add_button(
-            self,
-            label: str,
-            action: Union[str, ActionEnum],
-            web_link_url: Optional[str] = None,
-            message_text: Optional[str] = None,
-            phone_number: Optional[str] = None,
-            block_id: Optional[str] = None,
-            extra: Optional[Dict] = None) -> "ParentCardComponent":
-        """버튼 생성 인자로 버튼을 추가합니다.
-
-        버튼 생성 인자를 받아 Button 객체를 생성하여 버튼 리스트에 추가합니다.
-
-        Args:
-            label (str): 버튼에 적히는 문구입니다.
-            action Union[str, Action]: 버튼 클릭시 수행될 작업입니다.
-                                    (webLink, message, phone,
-                                    block, share, operator)
-            web_link_url (Optional[str]): 웹 브라우저를 열고 이동할 주소입니다.
-                                            (action이 webLink일 경우 필수)
-            message_text (Optional[str]): action이 message인 경우 사용자의 발화로
-                                            messageText를 내보냅니다. (이 경우 필수)
-                                        action이 block인 경우 블록 연결시
-                                            사용자의 발화로 노출됩니다. (이 경우 필수)
-            phone_number (Optional[str]): 전화번호 (action이 phone일 경우 필수)
-            block_id (Optional[str]): 호출할 block_id. (action이 block일 경우 필수)
-            extra (Optional[dict]): 스킬 서버에 추가로 전달할 데이터
-
-        Returns:
-            ParentCard: Button이 추가된 객체
-        """
         self,
         label: str,
-        action: str | ActionEnum,
+        action: Union[str, ActionEnum],
         web_link_url: Optional[str] = None,
         message_text: Optional[str] = None,
         phone_number: Optional[str] = None,
         block_id: Optional[str] = None,
-        extra: Optional[dict] = None,
+        extra: Optional[Dict] = None
     ) -> "ParentCardComponent": ...
 
     def add_button(self, *args, **kwargs) -> "ParentCardComponent":
@@ -605,7 +575,7 @@ class ListCardComponent(ParentCardComponent):
         """ListCard 객체를 생성합니다.
 
         Args:
-            header Union[ListItem, str]: 리스트 카드의 상단 항목 str인 경우 ListItem으로 변환됩니다.
+            header (Union[ListItem, str]): 리스트 카드의 상단 항목 str인 경우 ListItem으로 변환됩니다.
             items (ListItems): 리스트 카드의 각각 아이템
             buttons (Optional[list[Button]], optional): 리스트 카드의 버튼들.
                                                     Defaults to None.
@@ -676,42 +646,15 @@ class ListCardComponent(ParentCardComponent):
 
     @overload
     def add_item(
-            self,
-            title: str,
-            description: Optional[str] = None,
-            image_url: Optional[str] = None,
-            link: Optional[Link] = None,
-            action: Optional[Union[str, ActionEnum]] = None,
-            block_id: Optional[str] = None,
-            message_text: Optional[str] = None,
-            extra: Optional[Dict] = None
-    ) -> "ListCardComponent":
-        """ListCardComponent에 아이템을 ListItem 생성 인자로 추가합니다.
-
-        Args:
-            title (str): item의 제목
-            description (str, optional): item의 설명
-            image_url (str, optional): item의 우측 안내 사진
-            link (Link, optional): item 클릭 시 동작할 링크
-            action (Union[str, Action], optional):
-                            itaem 클릭 시 수행될 작업(block 또는 message)
-            block_id (str, optional): action이 block인 경우 block_id를 갖는 블록을 호출
-            message_text (str, optional):
-                            action이 message인 경우 리스트 아이템 클릭 시 전달할 메시지
-            extra (dict, optional): 블록 호출시, 스킬 서버에 추가적으로 제공하는 정보
-
-        Returns:
-            ListCardComponent: ListItem이 추가된 객체
-        """
         self,
         title: str,
         description: Optional[str] = None,
         image_url: Optional[str] = None,
         link: Optional[Link] = None,
-        action: Optional[str | ActionEnum] = None,
+        action: Optional[Union[str, ActionEnum]] = None,
         block_id: Optional[str] = None,
         message_text: Optional[str] = None,
-        extra: Optional[dict] = None,
+        extra: Optional[Dict] = None
     ) -> "ListCardComponent": ...
 
     @overload
@@ -1026,11 +969,11 @@ class ItemCardComponent(ParentCardComponent):
             ValueError: `item` 키워드에 Item 객체가 아닌 것을 주거나,
                         `index` 키워드에 정수가 아닌 값을 주는 경우.
         """
-        if isinstance(arg[0], Item):
-            self.item_list.remove(arg[0])
-        elif isinstance(arg[0], int):
-            self.item_list.pop(arg[0])
-        elif "item" in kwarg:
-            self.item_list.remove(kwarg["item"])
-        elif "index" in kwarg:
-            self.item_list.pop(kwarg["index"])
+        if isinstance(args[0], Item):
+            self.item_list.remove(args[0])
+        elif isinstance(args[0], int):
+            self.item_list.pop(args[0])
+        elif "item" in kwargs:
+            self.item_list.remove(kwargs["item"])
+        elif "index" in kwargs:
+            self.item_list.pop(kwargs["index"])
