@@ -9,6 +9,14 @@ packages = [{include = "kakao_chatbot"}]
 [tool.poetry.dependencies]
 python = "^3.8"
 
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.6.5"
+
+[tool.ruff.lint]
+select = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [build-system]
 requires = ["poetry-core"]

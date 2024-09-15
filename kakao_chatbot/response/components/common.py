@@ -46,7 +46,7 @@ class Common(ParentComponent, metaclass=ABCMeta):
 
 
 class Link(Common):
-    """카카오톡 출력 요소 Link의 객체를 생성하는 클래스
+    """카카오톡 출력 요소 Link의 객체를 생성하는 클래스입니다.
 
     Link는 버튼이나 썸네일 등에서 사용되는 링크를 나타냅니다.
     Link 객체는 웹, PC, 모바일 링크를 가질 수 있습니다.
@@ -66,10 +66,11 @@ class Link(Common):
     """
 
     def __init__(
-            self,
-            web: Optional[str] = None,
-            pc: Optional[str] = None,
-            mobile: Optional[str] = None):
+        self,
+        web: Optional[str] = None,
+        pc: Optional[str] = None,
+        mobile: Optional[str] = None,
+    ):
         """Link 객체의 생성자 메서드입니다.
 
         Args:
@@ -113,7 +114,7 @@ class Link(Common):
 
 
 class Thumbnail(Common):
-    """카카오톡 출력 요소 Thumbnail의 객체를 생성하는 클래스
+    """카카오톡 출력 요소 Thumbnail의 객체를 생성하는 클래스입니다.
 
     Thumbnail은 썸네일 이미지를 나타냅니다.
     썸네일 이미지는 이미지 URL을 가지며, 링크를 가질 수 있습니다.
@@ -128,10 +129,8 @@ class Thumbnail(Common):
     """
 
     def __init__(
-            self,
-            image_url: str,
-            link: Optional[Link] = None,
-            fixed_ratio: bool = False):
+        self, image_url: str, link: Optional[Link] = None, fixed_ratio: bool = False
+    ):
         """Thumbnail 클래스의 생성자 메서드입니다.
 
         Args:
@@ -175,7 +174,7 @@ class Thumbnail(Common):
 
 
 class Profile(Common):
-    """카카오톡 출력 요소 Profile의 객체를 생성하는 클래스
+    """카카오톡 출력 요소 Profile의 객체를 생성하는 클래스입니다.
 
     Profile은 사용자의 프로필 정보를 나타냅니다.
     이미지 URL은 선택적으로 사용할 수 있습니다.
@@ -225,7 +224,7 @@ class Profile(Common):
 
 
 class Button(Interaction, Common):
-    """카카오톡 출력 요소 Button의 객체를 생성하는 클래스
+    """카카오톡 출력 요소 Button의 객체를 생성하는 클래스입니다.
 
     Button은 사용자가 챗봇에게 빠르게 응답할 수 있도록 도와주는 버튼입니다.
     TextCardComponent, BasicCardComponent, CommerceCardComponent,
@@ -253,18 +252,19 @@ class Button(Interaction, Common):
         >>> button.render()
         {'label': '버튼 1', 'action': 'message', 'messageText': '버튼 1 클릭'}
     """
-    available_action_enums: List[ActionEnum] = [
-        action for action in ActionEnum]
+
+    available_action_enums: List[ActionEnum] = [action for action in ActionEnum]
 
     def __init__(
-            self,
-            label: str,
-            action: Union[str, ActionEnum],
-            web_link_url: Optional[str] = None,
-            message_text: Optional[str] = None,
-            phone_number: Optional[str] = None,
-            block_id: Optional[str] = None,
-            extra: Optional[Dict] = None):
+        self,
+        label: str,
+        action: Union[str, ActionEnum],
+        web_link_url: Optional[str] = None,
+        message_text: Optional[str] = None,
+        phone_number: Optional[str] = None,
+        block_id: Optional[str] = None,
+        extra: Optional[Dict] = None,
+    ):
         """Button 클래스의 생성자 메서드입니다.
 
         Args:
@@ -281,8 +281,7 @@ class Button(Interaction, Common):
             phone_number (Optional[str]): 전화번호 (action이 phone일 경우 필수)
             block_id (Optional[str]): 호출할 block_id. (action이 block일 경우 필수)
             extra (Optional[dict]): 스킬 서버에 추가로 전달할 데이터
-            """
-
+        """
         assert action is not None, "action은 str 또는 ActionEnum이어야 합니다."
         Interaction.__init__(self, action, extra)
         self.label = label
@@ -301,15 +300,16 @@ class Button(Interaction, Common):
             InvalidTypeError: phone_number가 문자열이 아닌 경우
             InvalidTypeError: block_id가 문자열이 아닌 경우
         """
-
-        assert self.action in self.available_action_enums, \
-            f"action은 {self.available_action_enums} 중 하나여야 합니다."
+        assert (
+            self.action in self.available_action_enums
+        ), f"action은 {self.available_action_enums} 중 하나여야 합니다."
         validate_str(
             self.label,
             self.web_link_url,
             self.message_text,
             self.phone_number,
-            self.block_id)
+            self.block_id,
+        )
         super().validate()
 
     def render(self) -> Dict:
@@ -335,7 +335,7 @@ class Button(Interaction, Common):
 
 
 class ListItem(Common, Interaction):
-    """카카오톡 출력 요소 ListCard의 items에 들어가는 Item을 나타내는 클래스
+    """카카오톡 출력 요소 ListCard의 items에 들어가는 Item을 나타내는 클래스입니다.
 
     ListItem은 리스트 형태의 정보를 나타냅니다.
     ListItem은 title, description, imageUrl, link, action, block_id,
@@ -356,18 +356,20 @@ class ListItem(Common, Interaction):
         message_text (str, optional): action이 message인 경우 리스트 아이템 클릭 시 전달할 메시지
         extra (dict, optional): 블록 호출시, 스킬 서버에 추가적으로 제공하는 정보
     """
+
     available_action_enums = [ActionEnum.BLOCK, ActionEnum.MESSAGE]
 
     def __init__(
-            self,
-            title: str,
-            description: Optional[str] = None,
-            image_url: Optional[str] = None,
-            link: Optional[Link] = None,
-            action: Optional[Union[str, ActionEnum]] = None,
-            block_id: Optional[str] = None,
-            message_text: Optional[str] = None,
-            extra: Optional[Dict] = None):
+        self,
+        title: str,
+        description: Optional[str] = None,
+        image_url: Optional[str] = None,
+        link: Optional[Link] = None,
+        action: Optional[Union[str, ActionEnum]] = None,
+        block_id: Optional[str] = None,
+        message_text: Optional[str] = None,
+        extra: Optional[Dict] = None,
+    ):
         """ListItem 클래스의 생성자 메서드입니다.
 
         Args:

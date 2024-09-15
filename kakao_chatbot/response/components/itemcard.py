@@ -11,18 +11,13 @@ classes:
     - ItemListSummary: ItemCard의 아이템 리스트 요약을 담는 클래스
     - ItemProfile: ItemCard의 프로필을 담는 클래스
 """
+
 from typing import Optional, Dict
 
 from .common import Common, Link
 from ...validation import validate_str, validate_int
 
-__all__ = [
-    "ItemThumbnail",
-    "ImageTitle",
-    "Item",
-    "ItemListSummary",
-    "ItemProfile"
-]
+__all__ = ["ItemThumbnail", "ImageTitle", "Item", "ItemListSummary", "ItemProfile"]
 
 
 class ItemThumbnail(Common):
@@ -38,18 +33,20 @@ class ItemThumbnail(Common):
     """
 
     def __init__(
-            self,
-            image_url: str,
-            width: Optional[int] = None,
-            height: Optional[int] = None,
-            link: Optional[Link] = None):
+        self,
+        image_url: str,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+        link: Optional[Link] = None,
+    ):
         """ItemThumbnail을 생성합니다.
 
         Args:
             image_url (str): 썸네일 이미지 URL
             width (int, optional): 썸네일 이미지의 너비 정보. Defaults to None.
             height (int, optional): 썸네일 이미지의 높이 정보. Defaults to None.
-            link (Link, optional): 썸네일 이미지 클릭 시 이동할 링크. Defaults to None."""
+            link (Link, optional): 썸네일 이미지 클릭 시 이동할 링크. Defaults to None.
+        """
         super().__init__()
         self.image_url = image_url
         self.width = width
@@ -89,7 +86,7 @@ class ItemThumbnail(Common):
             "imageUrl": self.image_url,
             "width": self.width,
             "height": self.height,
-            "link": self.link.render() if self.link is not None else None
+            "link": self.link.render() if self.link is not None else None,
         }
         return self.remove_none_item(response)
 
@@ -108,10 +105,11 @@ class ImageTitle(Common):
     """
 
     def __init__(
-            self,
-            title: str,
-            description: Optional[str] = None,
-            image_url: Optional[str] = None):
+        self,
+        title: str,
+        description: Optional[str] = None,
+        image_url: Optional[str] = None,
+    ):
         """ImageTitle을 생성합니다.
 
         Args:
@@ -153,7 +151,7 @@ class ImageTitle(Common):
         response = {
             "title": self.title,
             "description": self.description,
-            "imageUrl": self.image_url
+            "imageUrl": self.image_url,
         }
         return self.remove_none_item(response)
 
@@ -185,7 +183,8 @@ class Item(Common):
 
         Raises:
             AssertionError: title이 None이거나 str이 아닐 경우 발생합니다.
-            AssertionError: description이 None이거나 str이 아닐 경우 발생합니다."""
+        AssertionError: description이 None이거나 str이 아닐 경우 발생합니다.
+        """
         validate_str(self.title, self.description, disallow_none=True)
 
     def render(self) -> Dict:
@@ -202,10 +201,7 @@ class Item(Common):
             }
         """
         self.validate()
-        response = {
-            "title": self.title,
-            "description": self.description
-        }
+        response = {"title": self.title, "description": self.description}
         return self.remove_none_item(response)
 
 
@@ -229,11 +225,12 @@ class ItemProfile(Common):
     """
 
     def __init__(
-            self,
-            title: str,
-            image_url: Optional[str] = None,
-            width: Optional[int] = None,
-            height: Optional[int] = None):
+        self,
+        title: str,
+        image_url: Optional[str] = None,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+    ):
         """ItemProfile을 생성합니다.
 
         Args:
@@ -280,6 +277,6 @@ class ItemProfile(Common):
             "title": self.title,
             "imageUrl": self.image_url,
             "width": self.width,
-            "height": self.height
+            "height": self.height,
         }
         return self.remove_none_item(response)

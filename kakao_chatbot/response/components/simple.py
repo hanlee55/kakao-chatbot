@@ -1,4 +1,4 @@
-"""카카오톡 간단 출력 요소를 생성하는 클래스를 포함하는 모듈
+"""카카오톡 간단 출력 요소를 생성하는 클래스를 포함하는 모듈입니다.
 
 이 모듈은 카카오톡 챗봇 응답을 위한 간단한 출력 요소를 생성하는 클래스를 포함합니다.
 공통 출력 요소 Common과 카드 출력 요소 Card가 아닌 간단 출력 요소를 포함합니다.
@@ -8,18 +8,23 @@ Classes:
     - SimpleTextComponent: 텍스트만을 출력하는 요소를 생성하는 클래스
     - SimpleImageComponent: 이미지만을 출력하는 요소를 생성하는 클래스
 """
+
 from typing import List
 
 
 from ...validation import validate_str, validate_type
 from ..base import ParentComponent
 from .card import (
-    TextCardComponent, BasicCardComponent,
-    CommerceCardComponent, ItemCardComponent, ListCardComponent)
+    TextCardComponent,
+    BasicCardComponent,
+    CommerceCardComponent,
+    ItemCardComponent,
+    ListCardComponent,
+)
 
 
 class CarouselComponent(ParentComponent):
-    """카카오톡 출력 요소 Carousel의 객체를 생성하는 클래스
+    """카카오톡 출력 요소 Carousel의 객체를 생성하는 클래스입니다.
 
     가로로 출력 요소(ParentComponent)를 나열할 때 사용합니다.
     Carousel 내부 객체는 동일한 타입이어야 합니다.
@@ -54,11 +59,10 @@ class CarouselComponent(ParentComponent):
                 ]
             }
     """
+
     name = "carousel"
 
-    def __init__(
-            self,
-            *items: ParentComponent):
+    def __init__(self, *items: ParentComponent):
         """Carousel 객체를 생성합니다.
 
         items를 받아 객체 리스트를 생성합니다.
@@ -69,7 +73,6 @@ class CarouselComponent(ParentComponent):
             items (tuple[ParentComponent], optional):
                         CarouselComponent에 포함할 객체 리스트. Defaults to None.
         """
-
         self.items: List[ParentComponent] = [*items]
         self.type = None
         if not self.is_empty:
@@ -77,7 +80,7 @@ class CarouselComponent(ParentComponent):
 
     @property
     def is_empty(self):
-        """CarouselComponent이 비어있는지 확인합니다.(super 참고)
+        """CarouselComponent이 비어있는지 확인합니다.
 
         Returns:
             bool: CarouselComponent이 비어있으면 True, 아니면 False
@@ -104,7 +107,8 @@ class CarouselComponent(ParentComponent):
         else:
             assert self.type is not None
             assert isinstance(
-                item, self.type), "CarouselComponent 내부의 객체는 동일한 타입이어야 합니다."
+                item, self.type
+            ), "CarouselComponent 내부의 객체는 동일한 타입이어야 합니다."
 
         self.items.append(item)
 
@@ -117,31 +121,40 @@ class CarouselComponent(ParentComponent):
         self.items.remove(item)
 
     def validate(self):
-        """객체가 카카오톡 출력 요소에 맞는지 확인합니다.(super 참고)
+        """객체가 카카오톡 출력 요소에 맞는지 확인합니다.
 
         Raises:
             AssertionError: CarouselComponent은 최소 1개의 객체를 포함해야 합니다.
             AssertionError: CarouselComponent 내부 객체는 서로 동일한 타입이어야 합니다.
         """
         super().validate()
-        assert len(self.items) > 0, "CarouselComponent은 최소 1개의 객체를 포함해야 합니다."
+        assert (
+            len(self.items) > 0
+        ), "CarouselComponent은 최소 1개의 객체를 포함해야 합니다."
         assert self.type is not None
 
         if self.type not in (
-                TextCardComponent, BasicCardComponent, CommerceCardComponent,
-                ListCardComponent, ItemCardComponent):
-            raise AssertionError((
-                "CarouselComponent 내부 객체는 "
-                "TextCardComponent, BasicCardComponent, "
-                "CommerceCardComponent, ListCardComponent, ItemCardComponent "
-                "중 하나여야 합니다."))
+            TextCardComponent,
+            BasicCardComponent,
+            CommerceCardComponent,
+            ListCardComponent,
+            ItemCardComponent,
+        ):
+            raise AssertionError(
+                (
+                    "CarouselComponent 내부 객체는 "
+                    "TextCardComponent, BasicCardComponent, "
+                    "CommerceCardComponent, ListCardComponent, ItemCardComponent "
+                    "중 하나여야 합니다."
+                )
+            )
 
         validate_type(self.type, *self.items, disallow_none=True)
         for component in self.items:
             component.validate()
 
     def render(self):
-        """객체의 응답 내용을 반환합니다.(super 참고)
+        """객체의 응답 내용을 반환합니다.
 
         CarouselComponent 객체의 응답 내용을 반환합니다.
         이 응답 내용을 이용하여 render() 메서드에서 최종 응답을 생성합니다.
@@ -169,12 +182,12 @@ class CarouselComponent(ParentComponent):
         assert self.type is not None
         return {
             "type": self.type.name,
-            "items": [component.render() for component in self.items]
+            "items": [component.render() for component in self.items],
         }
 
 
 class SimpleTextComponent(ParentComponent):
-    """카카오톡 출력 요소 SimpleText의 객체를 생성하는 클래스
+    """카카오톡 출력 요소 SimpleText의 객체를 생성하는 클래스입니다.
 
     SimpleTextComponent는 텍스트 만을 출력하는 요소입니다.
 
@@ -191,6 +204,7 @@ class SimpleTextComponent(ParentComponent):
             "text": "안녕하세요"
         }
     """
+
     name = "simpleText"
 
     def __init__(self, text: str):
@@ -202,7 +216,7 @@ class SimpleTextComponent(ParentComponent):
         self.text = text
 
     def validate(self):
-        """객체가 카카오톡 출력 요소에 맞는지 확인합니다.(super 참고)
+        """객체가 카카오톡 출력 요소에 맞는지 확인합니다.
 
         Raises:
             ValueError: text가 문자열이 아닌 경우
@@ -211,7 +225,7 @@ class SimpleTextComponent(ParentComponent):
         return validate_str(self.text)
 
     def render(self):
-        """객체의 응답 내용을 반환합니다.(super 참고)
+        """객체의 응답 내용을 반환합니다.
 
         SimpleTextComponent 객체의 응답 내용을 반환합니다.
         이 응답 내용을 이용하여 render() 메서드에서 최종 응답을 생성합니다.
@@ -220,13 +234,11 @@ class SimpleTextComponent(ParentComponent):
             dict: 응답 내용
         """
         self.validate()
-        return {
-            "text": self.text
-        }
+        return {"text": self.text}
 
 
 class SimpleImageComponent(ParentComponent):
-    """카카오톡 출력 요소 SimpleImage의 객체를 생성하는 클래스
+    """카카오톡 출력 요소 SimpleImage의 객체를 생성하는 클래스입니다.
 
     SimpleImageComponent는 이미지 만을 출력하는 요소입니다.
 
@@ -248,6 +260,7 @@ class SimpleImageComponent(ParentComponent):
             "altText": "이미지 설명"
         }
     """
+
     name = "simpleImage"
 
     def __init__(self, image_url: str, alt_text: str):
@@ -265,7 +278,7 @@ class SimpleImageComponent(ParentComponent):
         self.alt_text = alt_text
 
     def validate(self):
-        """객체가 카카오톡 출력 요소에 맞는지 확인합니다.(super 참고)
+        """객체가 카카오톡 출력 요소에 맞는지 확인합니다.
 
         Raises:
             ValueError: image_url, alt_text가 문자열이 아닌 경우
@@ -274,7 +287,7 @@ class SimpleImageComponent(ParentComponent):
         return validate_str(self.image_url, self.alt_text)
 
     def render(self):
-        """객체의 응답 내용을 반환합니다.(super 참고)
+        """객체의 응답 내용을 반환합니다.
 
         SimpleImageComponent 객체의 응답 내용을 반환합니다.
         이 응답 내용을 이용하여 render() 메서드에서 최종 응답을 생성합니다.
@@ -283,7 +296,4 @@ class SimpleImageComponent(ParentComponent):
             dict: 응답 내용
         """
         self.validate()
-        return {
-            "imageUrl": self.image_url,
-            "altText": self.alt_text
-        }
+        return {"imageUrl": self.image_url, "altText": self.alt_text}
