@@ -296,19 +296,19 @@ class IntentExtra(ParentPayload):
     """
 
     def __init__(
-        self,
-        reson: Optional[Dict] = None,
-        matched_knowledges: Optional[List[Knowledge]] = None,
+          self,
+          reason: Optional[dict] = None,
+          matched_knowledges: Optional[list[Knowledge]] = None
     ):
         """IntentExtra 클래스의 인스턴스를 초기화합니다.
 
         Args:
-            reson (dict): 정보 없음(Kakao에서 정보를 제공하지 않습니다.)
+            reason (dict): 정보 없음(Kakao에서 정보를 제공하지 않습니다.)
             matched_knowledges (dict): Intent의 지식을 나타내는 딕셔너리.
         """
-        if reson is None:
-            reson = {}
-        self.reson = reson
+        if reason is None:
+            reason = {}
+        self.reason = reason
         self.matched_knowledges = matched_knowledges
 
     @classmethod
