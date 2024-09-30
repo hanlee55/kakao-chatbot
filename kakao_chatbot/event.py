@@ -5,7 +5,7 @@ EventAPI 클래스로 제공되는 객체를 이용하여 카카오톡 챗봇으
 
 import datetime
 import json
-from typing import Optional, overload
+from typing import Optional, overload, List, Dict
 from .base import BaseModel, ParentPayload
 from .validation import validate_str, validate_type
 
@@ -30,18 +30,21 @@ class EventUser(BaseModel):
             userRequest.user.properties 필드에포함되어 전달됩니다.
             >>> Payload.user_request.user.properties
     """
+
     type_list = ["appUserId", "plusfriendUserKey", "botUserKey"]
 
     def __init__(
-            self,
-            id_type: str,
-            ID: str,  # pylint: disable=invalid-name
-            properties: Optional[dict[str, str]] = None):
+        self, id_type: str, ID: str, properties: Optional[Dict[str, str]] = None
+    ):
         """EventUser의 생성자 메서드입니다.
+
+        사용자의 ID 타입, ID, 그리고 추가 속성을 설정합니다. `id_type`은 사전에 정의된 타입 목록 중 하나여야 하며,
+        `properties`는 유저 별 추가 페이로드를 담는 선택적 인자입니다.
 
         Args:
             id_type (str): 사용자 ID 타입
             ID (str): 사용자 ID
+            properties (dict[str, str], optional): 유저 별 추가 페이로드. 기본값은 None입니다.
         """
         self.id_type = id_type
         self.id = ID
@@ -116,16 +119,17 @@ class EventAPI(BaseModel):
     """
 
     def __init__(
-            self,
-            bot_id: str,
-            api_key: str,
-            event: str,
-            users: Optional[list[EventUser]] = None,
-            data: Optional[dict[str, str]] = None,
-            params: Optional[dict[str, str]] = None,
-            option: Optional[dict[str, str]] = None,
-            is_devchannel: Optional[bool] = False,
-            max_user: int = 100):
+        self,
+        bot_id: str,
+        api_key: str,
+        event: str,
+        users: Optional[List[EventUser]] = None,
+        data: Optional[Dict[str, str]] = None,
+        params: Optional[Dict[str, str]] = None,
+        option: Optional[Dict[str, str]] = None,
+        is_devchannel: Optional[bool] = False,
+        max_user: int = 100,
+    ):
         """EventAPI의 생성자 메서드입니다.
 
         Args:
@@ -168,18 +172,11 @@ class EventAPI(BaseModel):
             AssertionError: users가 없는 경우
             AssertionError: users의 길이가 100을 초과하는 경우
         """
-        validate_str(
-            self.bot_id,
-            self.api_key,
-            self.event,
-            disallow_none=True
-        )
+        validate_str(self.bot_id, self.api_key, self.event, disallow_none=True)
         if not self.users:
             raise AssertionError("users는 최소 1개 이상이어야 합니다.")
         if len(self.users) > self.max_user:
-            raise AssertionError(
-                f"users는 최대 {self.max_user}개 이하여야 합니다."
-            )
+            raise AssertionError(f"users는 최대 {self.max_user}개 이하여야 합니다.")
         for user in self.users:
             user.validate()
 
@@ -201,65 +198,60 @@ class EventAPI(BaseModel):
         self.validate()
         temp = {
             "event": event,
-            "user": (
-                [user.render() for user in self.users]
-                if self.users else None
-            ),
+            "user": ([user.render() for user in self.users] if self.users else None),
             "params": self.params if self.params else None,
             "option": self.option,
         }
         return self.remove_none_item(temp)
 
     @overload
-    def add_user(self, user: EventUser) -> "EventAPI":
-        """Event를 받을 사용자 정보를 EventUser 객체로 추가합니다.
-
-        Args:
-            user (EventUser): Event를 받을 사용자 객체
-
-        Returns:
-            EventAPI: 사용자 정보가 추가된 EventAPI 객체
-        """
+    def add_user(self, user: EventUser) -> "EventAPI": ...
 
     @overload
     def add_user(
         self,
         id_type: str,
         ID: str,  # pylint: disable=invalid-name
-        properties: Optional[dict[str, str]] = None
-    ) -> "EventAPI":
-        """Event를 받을 사용자 정보를 EventUser 객체 생성 인자로 추가합니다.
-
-        Args:
-            id_type (str): 사용자 ID 타입
-            ID (str): 사용자 ID
-            properties (dict[str, str], optional): 사용자 속성
-
-        Returns:
-            EventAPI: 사용자 정보가 추가된 EventAPI 객체
-        """
+        properties: Optional[Dict[str, str]] = None,
+    ) -> "EventAPI": ...
 
     def add_user(self, *args, **kwargs) -> "EventAPI":
-        """Event를 받을 사용자 정보를 추가합니다.
+        """이벤트를 받을 사용자 정보를 추가합니다.
+
+        이 메서드는 다음 두 가지 방법으로 호출할 수 있습니다:
+
+        1. `EventUser` 객체를 직접 전달.
+        2. `id_type`, `ID`, 및 선택적인 `properties`를 전달하여 `EventUser` 객체를 생성.
 
         Args:
-            *args: EventUser 객체 또는 EventUser 생성 인자
-            **kwargs: EventUser 생성 인자
+          *args:
+            - `EventUser`: 추가할 사용자 객체.
+            - `id_type` (str): 사용자 ID 타입.
+            - `ID` (str): 사용자 ID.
+            - `properties` (dict[str, str], optional): 사용자 속성.
+          **kwargs:
+            - `user` (EventUser): 추가할 사용자 객체.
+            - `id_type` (str): 사용자 ID 타입.
+            - `ID` (str): 사용자 ID.
+            - `properties` (dict[str, str], optional): 사용자 속성.
 
         Returns:
-            EventAPI: 사용자 정보가 추가된 EventAPI 객체
+          EventAPI: 사용자 정보가 추가된 `EventAPI` 객체.
+
+        Raises:
+          TypeError: 유효한 인자가 제공되지 않은 경우.
         """
         if len(args) > 0 and isinstance(args[0], EventUser):
             self.users.append(args[0])
-        elif kwargs.get('user', None) is not None:
-            self.users.append(kwargs['user'])
+        elif kwargs.get("user", None) is not None:
+            self.users.append(kwargs["user"])
         else:
             user = EventUser(*args, **kwargs)
             self.users.append(user)
         return self
 
     @property
-    def headers(self) -> dict[str, str]:
+    def headers(self) -> Dict[str, str]:
         """EventAPI의 헤더를 반환합니다.
 
         api_key가 "KakaoAK "로 시작하지 않는 경우 "KakaoAK "를 자동으로 추가합니다.
@@ -290,7 +282,7 @@ class EventAPI(BaseModel):
         return f"https://bot-api.kakao.com/v2/bots/{self.bot_id}/talk"
 
     @property
-    def body(self) -> dict:
+    def body(self) -> Dict:
         """EventAPI의 body를 반환합니다.
 
         self.render()로 생성된 딕셔너리를 반환합니다.
@@ -316,19 +308,23 @@ class EventAPIResponse(ParentPayload):
     """
 
     def __init__(
-        self,
-        task_id: str,
-        status: str,
-        message: str,
-        timestamp: datetime.datetime
+        self, task_id: str, status: str, message: str, timestamp: datetime.datetime
     ):
+        """EventAPIResponse 인스턴스를 초기화합니다.
+
+        Args:
+            task_id (str): 실행 결과를 조회하기 위한 taskID.
+            status (str): SUCCESS나 FAIL 중 하나.
+            message (str): 실행 결과에 대한 메시지.
+            timestamp (datetime.datetime): 응답 시간.
+        """
         self.task_id = task_id
         self.status = status
         self.message = message
         self.timestamp = timestamp
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'EventAPIResponse':
+    def from_dict(cls, data: Dict) -> "EventAPIResponse":
         """EventAPIResponse 객체를 딕셔너리로부터 생성합니다.
 
         Args:
@@ -341,12 +337,19 @@ class EventAPIResponse(ParentPayload):
             task_id=data.get("task_id", ""),
             status=data.get("status", ""),
             message=data.get("message", ""),
-            timestamp=datetime.datetime.fromtimestamp(
-                data.get("timestamp", ""))
+            timestamp=datetime.datetime.fromtimestamp(data.get("timestamp", "")),
         )
 
     @classmethod
-    def from_json(cls, data: str) -> 'EventAPIResponse':
+    def from_json(cls, data: str) -> "EventAPIResponse":
+        """JSON 문자열로부터 EventAPIResponse 객체를 생성합니다.
+
+        Args:
+            data (str): JSON 문자열.
+
+        Returns:
+            EventAPIResponse: 생성된 EventAPIResponse 객체.
+        """
         return cls.from_dict(json.loads(data))
 
 
@@ -360,10 +363,7 @@ class CheckEventAPI(BaseModel):
         api_key (str): 카카오 디벨로퍼스 REST API 키
     """
 
-    def __init__(
-            self,
-            task_id: str,
-            api_key: str):
+    def __init__(self, task_id: str, api_key: str):
         """CheckEventAPI의 생성자 메서드입니다.
 
         Args:
@@ -381,11 +381,7 @@ class CheckEventAPI(BaseModel):
         Raises:
             InvalidTypeError: 검증하는 값이 허용되지 않는 타입인 경우
         """
-        validate_str(
-            self.task_id,
-            self.api_key,
-            disallow_none=True
-        )
+        validate_str(self.task_id, self.api_key, disallow_none=True)
 
     def render(self):
         """CheckEventAPI 객체를 카카오톡 요청 규칙에 맞게 딕셔너리로 변환합니다.
@@ -420,7 +416,7 @@ class CheckEventAPI(BaseModel):
         return f"https://bot-api.kakao.com/v2/tasks/{self.task_id}"
 
     @property
-    def headers(self) -> dict[str, str]:
+    def headers(self) -> Dict[str, str]:
         """CheckEventAPI를 이용해 요청할 헤더를 반환합니다.
 
         api_key가 "KakaoAK "로 시작하지 않는 경우 "KakaoAK "를 자동으로 추가합니다.
@@ -445,12 +441,13 @@ class CheckEventAPIResponse(ParentPayload):
     """
 
     def __init__(
-            self,
-            task_id: str,
-            status: str,
-            all_request_count: int,
-            success_count: int,
-            fail: Optional[dict] = None):
+        self,
+        task_id: str,
+        status: str,
+        all_request_count: int,
+        success_count: int,
+        fail: Optional[Dict] = None,
+    ):
         """CheckEventAPIResponse의 생성자 메서드입니다.
 
         Args:
@@ -467,7 +464,7 @@ class CheckEventAPIResponse(ParentPayload):
         self.fail = fail
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'CheckEventAPIResponse':
+    def from_dict(cls, data: Dict) -> "CheckEventAPIResponse":
         """CheckEventAPIResponse 객체를 딕셔너리로부터 생성합니다.
 
         Args:
@@ -485,7 +482,7 @@ class CheckEventAPIResponse(ParentPayload):
         )
 
     @classmethod
-    def from_json(cls, data: str) -> 'CheckEventAPIResponse':
+    def from_json(cls, data: str) -> "CheckEventAPIResponse":
         """CheckEventAPIResponse 객체를 JSON 문자열로부터 생성합니다.
 
         생성된 CheckEventAPIResponse 객체를 반환합니다.
@@ -510,7 +507,7 @@ class CheckEventAPIResponse(ParentPayload):
         return self.fail.get("count", 0)
 
     @property
-    def fail_list(self) -> list[dict[str, str]]:
+    def fail_list(self) -> List[Dict[str, str]]:
         """CheckEventAPI의 실패한 사용자 리스트를 반환합니다.
 
         Returns:

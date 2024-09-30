@@ -14,8 +14,9 @@ classes:
     - UserRequest: Payload의 userRequest 항목을 받아 객체로 변환하는 클래스
     - Payload: Payload 객체를 저장하는 클래스
 """
+
 import json
-from typing import Optional
+from typing import Optional, Union, List, Dict
 
 from .base import ParentPayload
 from .context import Context
@@ -23,9 +24,9 @@ from .customerror import InvalidPayloadError
 
 
 class Param(ParentPayload):
-    """openbuilder에서 'detailParams'를 통해 제공되는 파라미터 정보를 저장하는 클래스
+    """Params의 속성으로 사용되는 Param 클래스입니다.
 
-    Params의 속성으로 사용되는 Param 클래스입니다.
+    openbuilder에서 'detailParams'를 통해 제공되는 파라미터 정보를 저장합니다.
 
     이 클래스는 블록의 발화로부터 추출된 개별 파라미터 정보를 담습니다. openbuilder는 파라미터 정보를
     'param'과 'detailParams'라는 두 가지 key로 구분하여 제공합니다. 이 중 'detailParams'는
@@ -37,22 +38,19 @@ class Param(ParentPayload):
 
     Attributes:
         origin (str): 사용자 발화에서 직접 추출한 파라미터의 원본 텍스트.
-        value (str | dict): 파라미터의 실제 값. 문자열 또는 딕셔너리 형태일 수 있으며,
+        value Union[str, dict]: 파라미터의 실제 값. 문자열 또는 딕셔너리 형태일 수 있으며,
                             딕셔너리 형태인 경우, 추가적인 상세 정보를 포함합니다.
         group_name (str): 파라미터가 속한 그룹의 이름. 파라미터를 분류하는 데 사용됩니다.
     """
 
     def __init__(
-            self,
-            origin: str,
-            value: str | dict,
-            group_name: str = '',
-            **kwargs):
-        """Param 객체를 생성하는 메서드
+        self, origin: str, value: Union[str, Dict], group_name: str = "", **kwargs
+    ):
+        """Param 객체를 생성하는 메서드입니다.
 
         Args:
             origin (str): 사용자가 입력한 발화에서 추출한 파라미터의 원본
-            value (str | dict): 파라미터의 대표값
+            value (Union[str, dict]): 파라미터의 대표값
             group_name (str): 파라미터의 그룹 이름 (기본값: '')
             **kwargs: 추가적인 정보
         """
@@ -63,8 +61,8 @@ class Param(ParentPayload):
             setattr(self, k, v)
 
     @classmethod
-    def from_dict(cls, data: dict):
-        """딕셔너리에서 Param 객체를 생성하는 클래스 메서드
+    def from_dict(cls, data: Dict):
+        """딕셔너리에서 Param 객체를 생성하는 클래스 메서드입니다.
 
         이 메서드는 'detailParams'에서 제공된 파라미터 정보를 바탕으로 Param 객체를 생성합니다.
         제공된 딕셔너리는 파라미터의 'origin', 'value', 그리고 선택적으로 'groupName'을 포함할 수 있습니다.
@@ -79,9 +77,9 @@ class Param(ParentPayload):
                 속성으로 가지며, 'value'가 딕셔너리인 경우 추가적인 속성을 동적으로 생성합니다.
         """
         try:
-            origin = data.get('origin', '')
-            value = data.get('value', '')
-            group_name = data.get('groupName', '')
+            origin = data.get("origin", "")
+            value = data.get("value", "")
+            group_name = data.get("groupName", "")
             if isinstance(value, dict):
                 # 'value'가 딕셔너리 타입인 경우, 이를 객체의 속성으로 추가합니다.
                 return cls(origin=origin, group_name=group_name, **value)
@@ -89,7 +87,8 @@ class Param(ParentPayload):
                 return cls(origin=origin, value=value, group_name=group_name)
         except KeyError as err:
             raise InvalidPayloadError(
-                'Param 객체를 생성하기 위한 키가 존재하지 않습니다.') from err
+                "Param 객체를 생성하기 위한 키가 존재하지 않습니다."
+            ) from err
 
 
 class Action(ParentPayload):
@@ -109,19 +108,24 @@ class Action(ParentPayload):
     """
 
     def __init__(
-            self,
-            ID: str,  # pylint: disable=invalid-name
-            name: str,
-            params: dict[str, str],
-            detail_params: dict[str, Param],
-            client_extra: dict):
+        self,
+        ID: str,
+        name: str,
+        params: Dict[str, str],
+        detail_params: Dict[str, Param],
+        client_extra: Dict,
+    ):
         """Action 클래스의 인스턴스를 초기화합니다.
+
+        사용자의 액션 정보를 초기화하며, 액션의 고유 ID, 이름, 파라미터 정보, 상세 파라미터 정보,
+        그리고 클라이언트 추가 정보를 설정합니다.
 
         Args:
             ID (str): 액션의 고유 ID.
             name (str): 액션의 이름.
-            params (Params): 액션에 포함된 파라미터 정보.
-            client_extra (dict): 클라이언트 추가 정보.
+            params (Dict[str, str]): 액션에 포함된 파라미터 정보.
+            detail_params (Dict[str, Param]): 상세 파라미터 정보.
+            client_extra (Dict[str, str]): 클라이언트 추가 정보.
         """
         self.id = ID
         self.name = name
@@ -130,7 +134,7 @@ class Action(ParentPayload):
         self.client_extra = client_extra
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Action':
+    def from_dict(cls, data: Dict) -> "Action":
         """딕셔너리에서 Action 객체를 생성하는 클래스 메서드입니다.
 
         제공해야 하는 딕셔너리는 payload의 'action'입니다.
@@ -164,20 +168,20 @@ class Action(ParentPayload):
                    {'detail_param_key': Param('origin_text', 'param_value')},
                    {'key': 'value'})
         """
-        ID = data.get('id', '')  # pylint: disable=invalid-name
-        name = data.get('name', '')
-        params = data.get('params', {})
+        ID = data.get("id", "")
+        name = data.get("name", "")
+        params = data.get("params", {})
         detail_params = {
             key: Param.from_dict(value)
-            for key, value in data.get('detailParams', {}).items()
+            for key, value in data.get("detailParams", {}).items()
         }
-        client_extra = data['clientExtra']
+        client_extra = data["clientExtra"]
         return cls(
             ID=ID,
             name=name,
             params=params,
             detail_params=detail_params,
-            client_extra=client_extra
+            client_extra=client_extra,
         )
 
 
@@ -192,7 +196,7 @@ class Bot(ParentPayload):
         name (str): 봇의 이름입니다.
     """
 
-    def __init__(self, ID: str, name: str):  # pylint: disable=invalid-name
+    def __init__(self, ID: str, name: str):
         """Bot 클래스의 인스턴스를 초기화합니다.
 
         Args:
@@ -203,7 +207,7 @@ class Bot(ParentPayload):
         self.name = name
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Bot':
+    def from_dict(cls, data: Dict) -> "Bot":
         """딕셔너리에서 Bot 객체를 생성하는 클래스 메서드입니다.
 
         제공해야 하는 딕셔너리는 payload의 'bot'입니다.
@@ -216,12 +220,9 @@ class Bot(ParentPayload):
         Returns:
             Bot: 생성된 Bot 인스턴스.
         """
-        ID = data.get('id', '')  # pylint: disable=invalid-name
-        name = data.get('name', '')
-        return cls(
-            ID=ID,
-            name=name
-        )
+        ID = data.get("id", "")
+        name = data.get("name", "")
+        return cls(ID=ID, name=name)
 
 
 class Knowledge(ParentPayload):
@@ -241,12 +242,13 @@ class Knowledge(ParentPayload):
     """
 
     def __init__(
-            self,
-            answer: str,
-            question: str,
-            categories: list[str],
-            landing_url: str,
-            image_url: str):
+        self,
+        answer: str,
+        question: str,
+        categories: List[str],
+        landing_url: str,
+        image_url: str,
+    ):
         """Knowledge 클래스의 인스턴스를 초기화합니다."""
         self.answer = answer
         self.question = question
@@ -255,7 +257,7 @@ class Knowledge(ParentPayload):
         self.image_url = image_url
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Knowledge':
+    def from_dict(cls, data: Dict) -> "Knowledge":
         """딕셔너리에서 Knowledge 객체를 생성하는 클래스 메서드입니다.
 
         제공해야 하는 딕셔너리는 payload의 'intent'의 'extra'의
@@ -266,17 +268,17 @@ class Knowledge(ParentPayload):
         Args:
             data (dict): 지식 정보가 담긴 딕셔너리.
         """
-        answer = data.get('answer', '')
-        question = data.get('question', '')
-        categories = data.get('categories', [])
-        landing_url = data.get('landingUrl', '')
-        image_url = data.get('imageUrl', '')
+        answer = data.get("answer", "")
+        question = data.get("question", "")
+        categories = data.get("categories", [])
+        landing_url = data.get("landingUrl", "")
+        image_url = data.get("imageUrl", "")
         return cls(
             answer=answer,
             question=question,
             categories=categories,
             landing_url=landing_url,
-            image_url=image_url
+            image_url=image_url,
         )
 
 
@@ -294,9 +296,10 @@ class IntentExtra(ParentPayload):
     """
 
     def __init__(
-            self,
-            reason: Optional[dict] = None,
-            matched_knowledges: Optional[list[Knowledge]] = None):
+          self,
+          reason: Optional[dict] = None,
+          matched_knowledges: Optional[list[Knowledge]] = None
+    ):
         """IntentExtra 클래스의 인스턴스를 초기화합니다.
 
         Args:
@@ -309,7 +312,7 @@ class IntentExtra(ParentPayload):
         self.matched_knowledges = matched_knowledges
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'IntentExtra':
+    def from_dict(cls, data: Dict) -> "IntentExtra":
         """딕셔너리에서 IntentExtra 객체를 생성하는 클래스 메서드입니다.
 
         제공해야 하는 딕셔너리는 payload의 'intent'의 'extra'입니다.
@@ -318,10 +321,11 @@ class IntentExtra(ParentPayload):
         Args:
             data (dict): IntentExtra 정보가 담긴 딕셔너리.
         """
-        reason: dict = data.get('reason', {})
-        knowledges: dict = data.get('matched_knowledges', {})
-        matched_knowledges = [Knowledge.from_dict(
-            knowledge) for knowledge in knowledges]
+        reason: Dict = data.get("reason", {})
+        knowledges: Dict = data.get("matched_knowledges", {})
+        matched_knowledges = [
+            Knowledge.from_dict(knowledge) for knowledge in knowledges
+        ]
         return cls(reason, matched_knowledges)
 
 
@@ -341,17 +345,18 @@ class Intent(ParentPayload):
     """
 
     def __init__(
-            self,
-            ID: str,  # pylint: disable=invalid-name
-            name: str,
-            extra: IntentExtra):
+        self,
+        ID: str,
+        name: str,
+        extra: IntentExtra,
+    ):
         """Intent 클래스의 인스턴스를 초기화합니다."""
         self.id = ID
         self.name = name
         self.extra = extra
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Intent':
+    def from_dict(cls, data: Dict) -> "Intent":
         """딕셔너리에서 Intent 객체를 생성하는 클래스 메서드입니다.
 
         제공해야 하는 딕셔너리는 payload의 'intent'입니다.
@@ -363,14 +368,10 @@ class Intent(ParentPayload):
         Returns:
             Intent: 생성된 Intent 인스턴스.
         """
-        ID = data.get('id', '')  # pylint: disable=invalid-name
-        name = data.get('name', '')
-        extra = IntentExtra.from_dict(data.get('extra', {}))
-        return cls(
-            ID=ID,
-            name=name,
-            extra=extra
-        )
+        ID = data.get("id", "")
+        name = data.get("name", "")
+        extra = IntentExtra.from_dict(data.get("extra", {}))
+        return cls(ID=ID, name=name, extra=extra)
 
 
 class UserProperties(ParentPayload):
@@ -387,18 +388,25 @@ class UserProperties(ParentPayload):
     """
 
     def __init__(
-            self,
-            plusfriend_user_key: str,
-            app_user_id: str,
-            is_friend: Optional[bool] = None):
-        """UserProperties 객체를 생성하는 메서드"""
+        self,
+        plusfriend_user_key: str,
+        app_user_id: str,
+        is_friend: Optional[bool] = None,
+    ):
+        """UserProperties 객체를 생성하는 메서드입니다.
+
+        Args:
+            plusfriend_user_key (str): 카카오톡 채널에서 제공하는 사용자 식별키
+            app_user_id (str): 봇 설정에서 앱키를 설정한 경우에만 제공되는 사용자 정보입니다.
+            is_friend (bool): 사용자가 봇과 연결된 카카오톡 채널을 추가한 경우 제공되는 식별키입니다.
+        """
         self.plusfriend_user_key = plusfriend_user_key
         self.app_user_id = app_user_id
         self.is_friend = is_friend
 
     @classmethod
-    def from_dict(cls, data: dict):
-        """딕셔너리에서 UserProperties 객체를 생성하는 클래스 메서드
+    def from_dict(cls, data: Dict):
+        """딕셔너리에서 UserProperties 객체를 생성하는 클래스 메서드입니다.
 
         전달받는 딕셔너리는 payload의 'user'의 'properties'입니다.
         주어진 딕셔너리로부터 사용자 정보를 추출하여 UserProperties 클래스의 인스턴스를 생성합니다.
@@ -406,13 +414,13 @@ class UserProperties(ParentPayload):
         Args:
             data (dict): 사용자 정보가 담긴 딕셔너리
         """
-        plusfriend_user_key = data.get('plusfriendUserKey', '')
-        app_user_id = data.get('appUserId', '')
-        is_friend = data.get('isFriend', None)
+        plusfriend_user_key = data.get("plusfriendUserKey", "")
+        app_user_id = data.get("appUserId", "")
+        is_friend = data.get("isFriend", None)
         return cls(
             plusfriend_user_key=plusfriend_user_key,
             app_user_id=app_user_id,
-            is_friend=is_friend
+            is_friend=is_friend,
         )
 
 
@@ -437,11 +445,12 @@ class User(ParentPayload):
     """
 
     def __init__(
-            self,
-            ID: str,  # pylint: disable=invalid-name
-            TYPE: str,  # pylint: disable=invalid-name
-            properties: Optional[dict] = None):
-        """User 객체를 생성하는 메서드
+        self,
+        ID: str,
+        TYPE: str,
+        properties: Optional[Dict] = None,
+    ):
+        """User 객체를 생성하는 메서드입니다.
 
         properties가 None인 경우 빈 딕셔너리로 초기화합니다.
         """
@@ -453,8 +462,8 @@ class User(ParentPayload):
         self.properties = properties
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'User':
-        """딕셔너리에서 User 객체를 생성하는 클래스 메서드
+    def from_dict(cls, data: Dict) -> "User":
+        """딕셔너리에서 User 객체를 생성하는 클래스 메서드입니다.
 
         전달받는 딕셔너리는 payload의 'userRequest'의 'user'입니다.
 
@@ -464,14 +473,10 @@ class User(ParentPayload):
         Returns:
             User: 생성된 User 객체
         """
-        ID = data.get('id', '')  # pylint: disable=invalid-name
-        TYPE = data.get('type', '')  # pylint: disable=invalid-name
-        properties = data.get('properties', {})
-        return cls(
-            ID=ID,
-            TYPE=TYPE,
-            properties=properties
-        )
+        ID = data.get("id", "")
+        TYPE = data.get("type", "")
+        properties = data.get("properties", {})
+        return cls(ID=ID, TYPE=TYPE, properties=properties)
 
 
 class UserRequest(ParentPayload):
@@ -503,15 +508,16 @@ class UserRequest(ParentPayload):
     """
 
     def __init__(
-            self,
-            timezone: str,
-            block: dict,
-            utterance: str,
-            lang: str,
-            user: User,
-            params: Optional[dict] = None,
-            callback_url: Optional[str] = None):
-        """UserRequest 객체를 생성하는 메서드"""
+        self,
+        timezone: str,
+        block: Dict,
+        utterance: str,
+        lang: str,
+        user: User,
+        params: Optional[Dict] = None,
+        callback_url: Optional[str] = None,
+    ):
+        """UserRequest 객체를 생성하는 메서드입니다."""
         self.timezone = timezone
         self.block = block
         self.utterance = utterance
@@ -521,21 +527,21 @@ class UserRequest(ParentPayload):
         self.callback_url = callback_url
 
     @classmethod
-    def from_dict(cls, data: dict):
-        """딕셔너리에서 UserRequest 객체를 생성하는 클래스 메서드
+    def from_dict(cls, data: Dict):
+        """딕셔너리에서 UserRequest 객체를 생성하는 클래스 메서드입니다.
 
         전달받는 딕셔너리는 payload의 'userRequest'입니다.
 
         Args:
             data (dict): 사용자 요청 정보가 담긴 딕셔너리
         """
-        timezone = data.get('timezone', '')
-        block = data.get('block', {})
-        utterance = data.get('utterance', '')
-        lang = data.get('lang', '')
-        user = User.from_dict(data.get('user', {}))
-        params = data.get('params')
-        callback_url = data.get('callbackUrl')
+        timezone = data.get("timezone", "")
+        block = data.get("block", {})
+        utterance = data.get("utterance", "")
+        lang = data.get("lang", "")
+        user = User.from_dict(data.get("user", {}))
+        params = data.get("params")
+        callback_url = data.get("callbackUrl")
         return cls(
             timezone=timezone,
             block=block,
@@ -543,7 +549,7 @@ class UserRequest(ParentPayload):
             lang=lang,
             user=user,
             params=params,
-            callback_url=callback_url
+            callback_url=callback_url,
         )
 
 
@@ -566,15 +572,30 @@ class ValidationPayload(ParentPayload):
     """
 
     def __init__(
-            self,
-            bot: Bot,
-            is_in_slot_filling: bool,
-            lang: str,
-            params: dict[str, str],
-            timezone: str,
-            user: User,
-            utterance: str,
-            value: dict[str, str]):
+        self,
+        bot: Bot,
+        is_in_slot_filling: bool,
+        lang: str,
+        params: dict[str, str],
+        timezone: str,
+        user: User,
+        utterance: str,
+        value: dict[str, str],
+    ):
+        """ValidationPayload 인스턴스를 초기화합니다.
+
+        스킬 서버의 요청을 처리하기 위한 사용자 정보와 관련된 속성을 초기화합니다.
+
+        Args:
+            bot (Bot): 봇 정보를 담고 있는 객체.
+            is_in_slot_filling (bool): 슬롯 필링 중인지 여부.
+            lang (str): 사용자의 언어.
+            params (Dict[str, str]): 파라미터 정보.
+            timezone (str): 사용자의 시간대.
+            user (User): 사용자 정보를 담고 있는 객체.
+            utterance (str): 사용자 발화.
+            value (Dict[str, str]): 발화에서 추출한 값 정보.
+        """
         self.bot = bot
         self.is_in_slot_filling = is_in_slot_filling
         self.lang = lang
@@ -585,8 +606,8 @@ class ValidationPayload(ParentPayload):
         self.value = value
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'ValidationPayload':
-        """딕셔너리에서 ValidationPayload 객체를 생성하는 클래스 메서드
+    def from_dict(cls, data: Dict) -> "ValidationPayload":
+        """딕셔너리에서 ValidationPayload 객체를 생성하는 클래스 메서드입니다.
 
         딕셔너리에서 각 키에 해당하는 값을 추출하여 ValidationPayload 객체를 생성합니다.
         self.bot, self.user에 대한 정보는
@@ -598,14 +619,14 @@ class ValidationPayload(ParentPayload):
         Returns:
             ValidationPayload: 생성된 ValidationPayload 객체
         """
-        bot = Bot.from_dict(data.get('bot', {}))
-        is_in_slot_filling = data.get('isInSlotFilling', False)
-        lang = data.get('lang', '')
-        params = data.get('params', {})
-        timezone = data.get('timezone', '')
-        user = User.from_dict(data.get('user', {}))
-        utterance = data.get('utterance', '')
-        value = data.get('value', {})
+        bot = Bot.from_dict(data.get("bot", {}))
+        is_in_slot_filling = data.get("isInSlotFilling", False)
+        lang = data.get("lang", "")
+        params = data.get("params", {})
+        timezone = data.get("timezone", "")
+        user = User.from_dict(data.get("user", {}))
+        utterance = data.get("utterance", "")
+        value = data.get("value", {})
         return cls(
             bot=bot,
             is_in_slot_filling=is_in_slot_filling,
@@ -614,12 +635,12 @@ class ValidationPayload(ParentPayload):
             timezone=timezone,
             user=user,
             utterance=utterance,
-            value=value
+            value=value,
         )
 
     @classmethod
-    def from_json(cls, data: str) -> 'ValidationPayload':
-        """JSON 문자열을 Payload 객체로 변환하는 클래스 메서드
+    def from_json(cls, data: str) -> "ValidationPayload":
+        """JSON 문자열을 Payload 객체로 변환하는 클래스 메서드입니다.
 
         전달받는 json 문자열은 skill server에서 전달받은 전체 data입니다.
         from_dict 메서드를 호출하여 JSON 문자열을 객체로 변환합니다.
@@ -696,13 +717,14 @@ class Payload(ParentPayload):
     """
 
     def __init__(
-            self,
-            intent: Intent,
-            user_request: UserRequest,
-            bot: Bot,
-            action: Action,
-            contexts: Optional[list[Context]] = None):
-        """Payload 객체를 생성하는 메서드
+        self,
+        intent: Intent,
+        user_request: UserRequest,
+        bot: Bot,
+        action: Action,
+        contexts: Optional[List[Context]] = None,
+    ):
+        """Payload 객체를 생성하는 메서드입니다.
 
         context가 None인 경우 빈 딕셔너리로 초기화합니다.
 
@@ -722,8 +744,8 @@ class Payload(ParentPayload):
         self.contexts = contexts
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Payload':
-        """딕셔너리에서 Payload 객체를 생성하는 클래스 메서드
+    def from_dict(cls, data: Dict) -> "Payload":
+        """딕셔너리에서 Payload 객체를 생성하는 클래스 메서드입니다.
 
         전달받는 딕셔너리는 skill server에서 전달받은 전체 data입니다.
 
@@ -733,24 +755,22 @@ class Payload(ParentPayload):
         Returns:
             Payload: 생성된 Payload 객체
         """
-
-        intent = Intent.from_dict(data.get('intent', {}))
-        user_request = UserRequest.from_dict(data.get('userRequest', {}))
-        bot = Bot.from_dict(data.get('bot', {}))
-        action = Action.from_dict(data.get('action', {}))
-        contexts = [Context.from_dict(context)
-                    for context in data.get('contexts', [])]
+        intent = Intent.from_dict(data.get("intent", {}))
+        user_request = UserRequest.from_dict(data.get("userRequest", {}))
+        bot = Bot.from_dict(data.get("bot", {}))
+        action = Action.from_dict(data.get("action", {}))
+        contexts = [Context.from_dict(context) for context in data.get("contexts", [])]
         return cls(
             intent=intent,
             user_request=user_request,
             bot=bot,
             action=action,
-            contexts=contexts
+            contexts=contexts,
         )
 
     @classmethod
-    def from_json(cls, data: str) -> 'Payload':
-        """JSON 문자열을 Payload 객체로 변환하는 클래스 메서드
+    def from_json(cls, data: str) -> "Payload":
+        """JSON 문자열을 Payload 객체로 변환하는 클래스 메서드입니다.
 
         전달받는 json 문자열은 skill server에서 전달받은 전체 data입니다.
         from_dict 메서드를 호출하여 JSON 문자열을 객체로 변환합니다.
@@ -768,17 +788,17 @@ class Payload(ParentPayload):
 
         Returns:
             str: 사용자의 ID
-            """
+        """
         if (
-            hasattr(self, 'user_request') and
-            hasattr(self.user_request, 'user') and
-            hasattr(self.user_request.user, 'id')
+            hasattr(self, "user_request")
+            and hasattr(self.user_request, "user")
+            and hasattr(self.user_request.user, "id")
         ):
             return self.user_request.user.id
         return None
 
     @property
-    def params(self) -> Optional[dict[str, str]]:
+    def params(self) -> Optional[Dict[str, str]]:
         """액션에 포함된 파라미터 정보를 반환합니다.
 
         액션에 포함된 파라미터 정보는 action.params로부터 가져옵니다.
@@ -787,12 +807,12 @@ class Payload(ParentPayload):
             dict: 액션에 포함된 파라미터 정보
             None: 액션이 없거나 파라미터 정보가 없는 경우
         """
-        if hasattr(self, 'action') and hasattr(self.action, 'params'):
+        if hasattr(self, "action") and hasattr(self.action, "params"):
             return self.action.params
         return None
 
     @property
-    def detail_params(self) -> Optional[dict[str, Param]]:
+    def detail_params(self) -> Optional[Dict[str, Param]]:
         """액션에 포함된 파라미터 세부 정보를 반환합니다.
 
         액션에 포함된 파라미터 세부 정보는 action.detail_params로부터 가져옵니다.
@@ -801,7 +821,7 @@ class Payload(ParentPayload):
             dict: 액션에 포함된 파라미터 세부 정보
             None: 액션이 없거나 파라미터 세부 정보가 없는 경우
         """
-        if hasattr(self, 'action') and hasattr(self.action, 'detail_params'):
+        if hasattr(self, "action") and hasattr(self.action, "detail_params"):
             return self.action.detail_params
         return None
 
@@ -815,7 +835,6 @@ class Payload(ParentPayload):
             str: 사용자 발화
             None: 사용자 발화 정보가 없는 경우
         """
-        if (hasattr(self, 'user_request') and
-                hasattr(self.user_request, 'utterance')):
+        if hasattr(self, "user_request") and hasattr(self.user_request, "utterance"):
             return self.user_request.utterance
         return None
