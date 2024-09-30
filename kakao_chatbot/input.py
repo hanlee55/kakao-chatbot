@@ -289,7 +289,7 @@ class IntentExtra(ParentPayload):
     단독으로 사용되지 않습니다.
 
     Attributes:
-        reson (dict): 정보 없음(Kakao에서 정보를 제공하지 않습니다.)
+        reason (dict): 정보 없음(Kakao에서 정보를 제공하지 않습니다.)
         matched_knowledges (dict): Intent의 지식을 나타내는 딕셔너리입니다.
     """
 
