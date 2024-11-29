@@ -44,6 +44,7 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
+    "docs"
 ]
 
 line-length = 88
@@ -52,7 +53,7 @@ indent-width = 4
 target-version = "py38"
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "C"]
+select = ["E", "F", "W", "C", "D"]
 ignore = ["E203", "E501"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
