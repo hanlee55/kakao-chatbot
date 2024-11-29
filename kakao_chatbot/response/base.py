@@ -595,7 +595,7 @@ class KakaoResponse(BaseModel):
 
         Returns:
             KakaoResponse: QuickReply 객체가 추가된 KakaoResponse 객체
-        """  # noqa: D301
+        """  # noqa: D301, W605
         if not quick_replies:
             return self
 
