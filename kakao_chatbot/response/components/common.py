@@ -253,7 +253,7 @@ class Button(Interaction, Common):
         {'label': '버튼 1', 'action': 'message', 'messageText': '버튼 1 클릭'}
     """
 
-    available_action_enums: List[ActionEnum] = [action for action in ActionEnum]
+    available_action_enums: List[ActionEnum] = list(ActionEnum)
 
     def __init__(
         self,
