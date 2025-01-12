@@ -448,7 +448,7 @@ class User(ParentPayload):
         self,
         ID: str,
         TYPE: str,
-        properties: Optional[Dict] = None,
+        properties: UserProperties = None,
     ):
         """User 객체를 생성하는 메서드입니다.
 
@@ -475,7 +475,7 @@ class User(ParentPayload):
         """
         ID = data.get("id", "")
         TYPE = data.get("type", "")
-        properties = data.get("properties", {})
+        properties = UserProperties.from_dict(data.get("properties", {}))
         return cls(ID=ID, TYPE=TYPE, properties=properties)
 
 
